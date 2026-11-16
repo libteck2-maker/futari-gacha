@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>1分動画ガチャ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
+<style>
+/* layout: a candy-shop gacha counter. The capsule and the video share the yellow stage on top; one white sheet at the bottom holds the words and the buttons */
+:root{
+  color-scheme:light;
+  --bg:#ffd23f; --dots:#f5bd1f; --ink:#1d1a2f; --paper:#fffdf5; --muted:#5e5a72;
+  --red:#f0412f; --shun:#2f7bff; --ari:#ff5c8a;
+  --display:"Dela Gothic One","Hiragino Kaku Gothic StdN","Yu Gothic",sans-serif;
+  --body:"Zen Maru Gothic","Hiragino Maru Gothic ProN","Yu Gothic",sans-serif;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;color:var(--ink);font-family:var(--body);font-weight:500;font-size:16px;line-height:1.7;-webkit-text-size-adjust:100%;
+  background-color:var(--bg);background-image:radial-gradient(var(--dots) 2.5px,transparent 3px);background-size:22px 22px;overflow:hidden}
+.phone{max-width:440px;height:100%;margin:0 auto;display:flex;flex-direction:column}
+.phone[data-me="shun"]{--me:var(--shun)} .phone[data-me="ari"]{--me:var(--ari)}
+.phone[data-from="shun"]{--from:var(--shun)} .phone[data-from="ari"]{--from:var(--ari)}
+
+.bar{display:flex;justify-content:space-between;align-items:center;padding:14px 18px 0;font-size:13px;font-weight:700}
+.who{display:flex;align-items:center;gap:8px}
+.ava{width:30px;height:30px;border-radius:50%;background:var(--me);border:3px solid var(--ink);color:#fff;display:grid;place-items:center;font-family:var(--display);font-size:13px}
+.tag{background:var(--paper);border:2.5px solid var(--ink);border-radius:999px;padding:0 10px}
+
+.scene{flex:1;min-height:220px;position:relative;display:grid;place-items:center;padding:12px 18px}
+.scene>*{grid-area:1/1}
+.floor{align-self:end;width:150px;height:18px;border-radius:50%;background:rgba(29,26,47,.22);margin-bottom:calc(50% - 150px);display:none}
+
+.cap{width:190px;height:190px;border:0;background:none;padding:0;position:relative;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.cap span{position:absolute;left:0;width:100%;height:50%;border:4px solid var(--ink);transition:transform .45s cubic-bezier(.3,1.5,.5,1),opacity .35s}
+.cap .top{top:0;border-radius:190px 190px 0 0;background:var(--from);border-bottom-width:3px;transform-origin:0 100%}
+.cap .bot{bottom:0;border-radius:0 0 190px 190px;background:var(--paper);border-top-width:3px}
+.cap .top::after{content:"";position:absolute;left:20px;top:16px;width:34px;height:18px;border-radius:50%;background:rgba(255,255,255,.75);transform:rotate(-28deg)}
+.cap.hide{opacity:0;pointer-events:none}
+.cap.arrive{animation:arrive .9s cubic-bezier(.2,.9,.3,1) both,wob 2.4s 1s ease-in-out infinite}
+.cap.shake{animation:shake .45s linear both}
+.cap.open .top{transform:translate(-26px,-74px) rotate(-48deg);opacity:0}
+.cap.open .bot{transform:translateY(70px);opacity:0}
+.cap.open{pointer-events:none}
+.cap.empty .top{background:rgba(255,255,255,.55)}
+.cap.empty .bot{background:rgba(255,255,255,.55)}
+.cap.pop{animation:pop .4s cubic-bezier(.3,1.6,.5,1) both}
+.cap.roll{animation:roll .85s cubic-bezier(.5,0,.8,.4) forwards;pointer-events:none}
+@keyframes arrive{from{transform:translateX(-110vw) rotate(-560deg)}70%{transform:translateX(10px) rotate(12deg)}to{transform:none}}
+@keyframes wob{0%,60%,100%{transform:rotate(0)}70%{transform:rotate(-9deg)}80%{transform:rotate(8deg)}90%{transform:rotate(-4deg)}}
+@keyframes shake{0%,100%{transform:translateX(0) rotate(0)}15%{transform:translateX(-9px) rotate(-8deg)}30%{transform:translateX(9px) rotate(8deg)}45%{transform:translateX(-8px) rotate(-7deg)}60%{transform:translateX(8px) rotate(7deg)}80%{transform:translateX(-4px) rotate(-3deg) scale(1.08)}}
+@keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
+@keyframes roll{to{transform:translateX(110vw) rotate(560deg)}}
+
+.machine{width:min(70vw,250px);display:flex;flex-direction:column;transition:transform .45s cubic-bezier(.4,0,.2,1),opacity .3s}
+.machine.away{opacity:0;transform:translateY(-22px) scale(.86);pointer-events:none}
+.machine.jig{animation:jig .32s}
+@keyframes jig{25%{transform:translateX(-5px) rotate(-1.5deg)}50%{transform:translateX(5px) rotate(1.5deg)}75%{transform:translateX(-3px)}}
+.glass{height:132px;border:4px solid var(--ink);border-bottom:0;border-radius:28px 28px 0 0;background:rgba(255,255,255,.6);position:relative;overflow:hidden}
+#gl{position:absolute;inset:0;width:100%;height:100%;display:block}
+.glass::after{content:"";position:absolute;left:16px;top:14px;width:14px;height:54px;border-radius:7px;background:rgba(255,255,255,.8);transform:rotate(18deg)}
+.mbody{height:150px;background:var(--red);border:4px solid var(--ink);border-radius:0 0 22px 22px;position:relative;box-shadow:7px 7px 0 var(--ink)}
+.plate{position:absolute;left:12px;top:10px;background:var(--paper);border:3px solid var(--ink);border-radius:8px;font-family:var(--display);font-size:12px;line-height:1.8;padding:0 8px}
+.turnme{position:absolute;left:12px;bottom:10px;color:#fff;font-size:12px;font-weight:700;line-height:1.3}
+.handle{position:absolute;left:50%;top:50%;width:96px;height:96px;margin:-42px 0 0 -48px;border-radius:50%;background:var(--paper);border:4px solid var(--ink);touch-action:none;cursor:grab;padding:0;-webkit-tap-highlight-color:transparent;box-shadow:0 5px 0 rgba(29,26,47,.35)}
+.handle::before{content:"";position:absolute;left:7px;right:7px;top:50%;height:22px;margin-top:-11px;background:var(--ink);border-radius:11px}
+.handle::after{content:"";position:absolute;right:12px;top:50%;width:12px;height:12px;margin-top:-6px;border-radius:50%;background:var(--bg)}
+.handle:focus-visible{outline:3px solid var(--shun);outline-offset:3px}
+.chute{position:absolute;right:12px;bottom:10px;width:54px;height:38px;border-radius:10px 10px 4px 4px;background:var(--ink)}
+.cap.drop{animation:drop .75s cubic-bezier(.2,.9,.3,1) both,wob 2.4s 1s ease-in-out infinite}
+.cap.into{animation:into .62s cubic-bezier(.5,0,.7,1) forwards;pointer-events:none}
+@keyframes drop{from{transform:translate(74px,112px) scale(.26)}60%{transform:translate(0,12px) scale(1.07)}to{transform:none}}
+@keyframes into{from{transform:translateY(-70vh)}85%{opacity:1}to{transform:translateY(-150px) scale(.3);opacity:0}}
+.card{height:min(100%,400px);aspect-ratio:3/4;max-width:100%;border:4px solid var(--ink);border-radius:24px;overflow:hidden;background:#17142a;box-shadow:7px 7px 0 var(--ink);position:relative;transform:scale(0) rotate(-8deg);opacity:0;pointer-events:none;transition:transform .5s cubic-bezier(.25,1.5,.45,1),opacity .2s}
+.card.on{transform:none;opacity:1}
+.card canvas,.card video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none}
+.card[data-show="sm"] #sm,.card[data-show="vd"] #vd{display:block}
+.name{position:absolute;left:10px;top:10px;background:var(--from);color:#fff;border:3px solid var(--ink);border-radius:999px;padding:0 12px;font-family:var(--display);font-size:13px;line-height:1.9}
+
+.bit{position:absolute;left:50%;top:50%;width:13px;height:13px;margin:-6px;border:2.5px solid var(--ink);border-radius:4px;pointer-events:none;animation:bit .8s cubic-bezier(.1,.7,.3,1) forwards}
+@keyframes bit{from{transform:rotate(var(--a)) translateY(0) scale(1)}to{transform:rotate(var(--a)) translateY(calc(var(--d) * -1)) rotate(260deg) scale(.4);opacity:0}}
+
+.listbtn{font:inherit;font-size:13px;font-weight:700;color:var(--ink);background:var(--paper);border:2.5px solid var(--ink);border-radius:999px;padding:1px 6px 1px 12px;display:flex;align-items:center;gap:6px;cursor:pointer;box-shadow:2px 2px 0 var(--ink)}
+.listbtn b{background:var(--red);color:#fff;border-radius:999px;min-width:22px;height:22px;display:grid;place-items:center;font-family:var(--display);font-weight:400;font-size:12px;font-variant-numeric:tabular-nums}
+.listbtn.pop{animation:lpop .5s cubic-bezier(.3,1.6,.5,1)}
+@keyframes lpop{40%{transform:scale(1.25) rotate(-4deg)}}
+.memo{width:min(76vw,290px);background:#fffbe0;border:4px solid var(--ink);border-radius:6px 6px 18px 6px;box-shadow:7px 7px 0 var(--ink);padding:26px 16px 12px;position:relative;display:flex;flex-direction:column;gap:6px;transform:scale(0) rotate(10deg);opacity:0;pointer-events:none;transition:transform .5s cubic-bezier(.25,1.5,.45,1),opacity .2s}
+.memo.on{transform:rotate(-2deg);opacity:1;pointer-events:auto}
+.memo.nudge{animation:shake .4s}
+.tape{position:absolute;left:50%;top:-12px;width:84px;height:22px;margin-left:-42px;background:var(--from);border:3px solid var(--ink);transform:rotate(-3deg)}
+.mby{font-size:12px;font-weight:700;color:var(--muted)}
+.memo textarea{font:inherit;font-weight:700;font-size:20px;line-height:31px;color:var(--ink);background:repeating-linear-gradient(transparent 0 30px,rgba(29,26,47,.14) 30px 31px);border:0;outline:0;resize:none;width:100%;height:124px;padding:0;border-radius:0}
+.memo textarea::placeholder{color:rgba(29,26,47,.35)}
+.memo textarea:focus-visible{outline:3px solid var(--shun);outline-offset:4px}
+.mn{align-self:flex-end;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
+.memo.read .mn{visibility:hidden}
+.list{position:fixed;inset:0;display:none;z-index:5}
+.list.on{display:block}
+.shade{position:absolute;inset:0;background:rgba(29,26,47,.55)}
+.panel{position:absolute;left:0;right:0;bottom:0;max-width:440px;margin:0 auto;max-height:78%;overflow:auto;background:var(--paper);border:4px solid var(--ink);border-bottom:0;border-radius:28px 28px 0 0;padding:18px 20px 26px}
+.ph{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+h2{font-family:var(--display);font-weight:400;font-size:20px;margin:0}
+.x{font:inherit;font-size:22px;line-height:1;width:38px;height:38px;border-radius:50%;border:3px solid var(--ink);background:#fff;cursor:pointer;color:var(--ink)}
+#wl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+#wl li{display:grid;grid-template-columns:34px 1fr auto;gap:12px;align-items:center;border:3px solid var(--ink);border-radius:14px;padding:10px 12px;background:#fff}
+#wl li.none{display:block;border-style:dashed;color:var(--muted);font-size:14px}
+#wl b{display:block;font-size:16px;line-height:1.45}
+#wl small{font-size:12px;color:var(--muted)}
+.tick{width:34px;height:34px;border-radius:50%;border:3px solid var(--ink);background:#fff;cursor:pointer;padding:0;position:relative}
+#wl li.done .tick{background:#34c38f}
+#wl li.done .tick::after{content:"";position:absolute;left:10px;top:4px;width:8px;height:14px;border:solid var(--ink);border-width:0 3.5px 3.5px 0;transform:rotate(40deg)}
+#wl li.done b{text-decoration:line-through;color:var(--muted)}
+.shelf{display:flex;align-items:center;flex-wrap:wrap;gap:6px 8px;padding:0 2px 4px}
+.shelf:empty{display:none}
+.shelf .lab{font-size:12px;font-weight:700;color:var(--muted);flex:none}
+.opened{flex:none;font:inherit;font-size:12px;font-weight:700;color:var(--ink);background:#fff;border:2.5px solid var(--ink);border-radius:999px;padding:3px 10px 3px 4px;display:flex;align-items:center;gap:6px;cursor:pointer;box-shadow:2px 2px 0 var(--ink)}
+.opened i{width:24px;height:24px;border-radius:50%;border:2.5px solid var(--ink);background:linear-gradient(var(--c) 0 50%,#fffdf5 50% 100%)}
+.opened.new{animation:lpop .5s cubic-bezier(.3,1.6,.5,1)}
+.btn.ff{width:auto;flex:none;font-size:12px;padding:2px 4px;margin-left:auto}
+.sheet{background:var(--paper);border:4px solid var(--ink);border-bottom:0;border-radius:28px 28px 0 0;padding:18px 20px 14px;display:flex;flex-direction:column;gap:12px}
+.copy{min-height:92px;display:flex;flex-direction:column;gap:4px;justify-content:center}
+.k{margin:0;font-size:13px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+h1{font-family:var(--display);font-weight:400;font-size:23px;line-height:1.4;margin:0;text-wrap:balance}
+h1 em{font-style:normal;color:var(--from)}
+p{margin:0}
+.soft{font-size:14.5px;color:var(--muted);text-wrap:pretty}
+.warn{font-size:14px;font-weight:700;color:var(--red)}
+.time{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.count{font-family:var(--display);font-size:34px;line-height:1.2;font-variant-numeric:tabular-nums}
+.meter{height:16px;border:3px solid var(--ink);border-radius:999px;background:#fff;overflow:hidden}
+.meter i{display:block;height:100%;width:0;background:var(--from)}
+
+.acts{min-height:118px;display:flex;flex-direction:column;gap:10px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{font:inherit;font-family:var(--display);font-size:18px;color:#fff;background:var(--red);border:3.5px solid var(--ink);border-radius:16px;padding:10px 14px;text-align:center;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;width:100%;position:relative;box-shadow:4px 4px 0 var(--ink);transition:transform .08s,box-shadow .08s;-webkit-tap-highlight-color:transparent}
+.btn:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--ink)}
+.btn.sub{background:#fff;color:var(--ink);font-size:15px;padding:9px 10px}
+.btn.plain{background:transparent;color:var(--muted);border-color:transparent;box-shadow:none;font-family:var(--body);font-weight:700;font-size:14px;padding:4px;text-decoration:underline;text-underline-offset:3px}
+.btn:focus-visible,label.btn:focus-within{outline:3px solid var(--shun);outline-offset:2px}
+label.btn input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+.dial{width:26px;height:26px;border-radius:50%;background:#fff;border:3px solid var(--ink);position:relative;flex:none}
+.dial::after{content:"";position:absolute;left:50%;top:50%;width:20px;height:6px;margin:-3px -10px;background:var(--ink);border-radius:3px}
+.btn.spin .dial{animation:spin .6s cubic-bezier(.4,0,.2,1)}
+@keyframes spin{to{transform:rotate(360deg)}}
+.foot{font-size:11.5px;color:var(--muted);text-align:center;line-height:1.5}
+@media (max-height:700px){.machine{width:200px}.glass{height:104px}.mbody{height:128px}.handle{width:80px;height:80px;margin:-34px 0 0 -40px}}
+@media (max-height:660px){.copy{min-height:88px} h1{font-size:20px} .cap{transform-origin:center} .count{font-size:28px}}
+.wctl{display:flex;flex-direction:column;gap:4px}
+.wctl button{font:inherit;font-size:13px;line-height:1;width:30px;height:26px;border:2.5px solid var(--ink);border-radius:8px;background:#fff;cursor:pointer;color:var(--ink);padding:0}
+.authwrap{position:fixed;inset:0;z-index:20;display:grid;place-items:center;background:rgba(29,26,47,.45);padding:18px}
+.authwrap[hidden]{display:none}
+.authcard{background:var(--paper);border:4px solid var(--ink);border-radius:24px;box-shadow:7px 7px 0 var(--ink);padding:22px 20px;max-width:360px;width:100%;display:flex;flex-direction:column;gap:12px}
+.authcard h2{font-size:22px}
+.authcard input{font:inherit;font-size:16px;padding:10px 12px;border:3px solid var(--ink);border-radius:12px;background:#fff;color:var(--ink)}
+.asoft{font-size:14px;color:var(--muted)}
+.footbtn{font:inherit;font-size:11.5px;color:var(--muted);background:none;border:0;text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:0}
+@media (prefers-reduced-motion:reduce){.cap.arrive,.cap.drop,.cap.into,.machine.jig,.cap.shake,.cap.roll,.cap.pop,.bit,.btn.spin .dial{animation:none}.cap.roll,.cap.into{opacity:0}.card,.cap span{transition:opacity .2s}}
+</style>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#ffd23f">
+<link rel="apple-touch-icon" href="icon-192.png">
+</head>
+<body>
+<main class="phone" id="phone" data-me="shun" data-from="ari">
+  <div class="bar">
+    <span class="who"><span class="ava" id="ava">し</span><span id="whose">しゅんやの画面</span></span>
+    <button class="listbtn" id="listbtn" data-act="list">やりたいこと <b id="cnt">0</b></button>
+  </div>
+
+  <div class="scene" id="scene">
+    <div class="machine has" id="machine">
+      <div class="glass" id="glass"><canvas id="gl"></canvas>
+      </div>
+      <div class="mbody">
+        <span class="plate">1回 1分</span>
+        <button class="handle" id="handle" aria-label="ハンドルをまわす"></button>
+        <span class="turnme">ぐるっと<br>1周</span>
+        <span class="chute"></span>
+      </div>
+    </div>
+    <div class="card" id="card">
+      <canvas id="sm" width="300" height="400"></canvas>
+      <video id="vd" playsinline disablepictureinpicture></video>
+      <span class="name" id="name">ありさ</span>
+    </div>
+    <div class="memo" id="memo">
+      <span class="tape"></span>
+      <span class="mby" id="memoBy">しゅんやから</span>
+      <textarea id="memoText" maxlength="60" rows="4" placeholder="例：朝いちばんのパン屋に並んでみたい" aria-label="やりたいことメモ"></textarea>
+      <span class="mn" id="memoN">0/60</span>
+    </div>
+    <button class="cap hide" id="cap" data-act="open" aria-label="カプセルをあける"><span class="top"></span><span class="bot"></span></button>
+  </div>
+
+  <div class="sheet">
+    <div class="shelf" id="shelf"></div>
+    <div class="copy" id="copy" aria-live="polite"></div>
+    <div class="acts" id="acts"></div>
+    <p class="foot" id="foot">開けた動画は24時間で消えます。</p>
+  </div>
+  <div class="list" id="list">
+    <div class="shade" data-act="closelist"></div>
+    <div class="panel" role="dialog" aria-label="やりたいことリスト">
+      <div class="ph"><h2>やりたいことリスト</h2><button class="x" data-act="closelist" aria-label="とじる">×</button></div>
+      <ul id="wl"></ul>
+    </div>
+  </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script>
+window.__startGacha=function(){
+  var $=function(id){return document.getElementById(id);};
+  var phone=$('phone'), scene=$('scene'), cap=$('cap'), card=$('card'), sm=$('sm'), v=$('vd'), copy=$('copy'), acts=$('acts'),
+      machine=$('machine'), handle=$('handle'), glass=$('glass'), memo=$('memo'), shelfEl=$('shelf'), gl=$('gl');
+  var P={shun:{name:'しゅんや',ini:'し',col:'#2f7bff'},ari:{name:'ありさ',ini:'あ',col:'#ff5c8a'}};
+  var DAY=24*3600*1000, SDUR=12;
+
+  /* =====================================================================
+     Store：データの出し入れは、すべてここを通る。
+     いまは 1台の中だけで動く見本用（LocalStore）。
+     二人で使う版は、同じ名前・同じ戻り値の SupabaseStore に差し替える。
+     どの関数も Promise を返す。くわしい約束は HANDOFF.md。
+     ===================================================================== */
+  var Store=(function(){
+    var sb=window.__sb, slot=window.__slot, pair=window.__pair;
+    function rpc(name,args){ return sb.rpc(name,args||{}).then(function(r){ if(r.error) throw r.error; return r.data; }); }
+    function sign(path){ return sb.storage.from('gacha-videos').createSignedUrl(path,3600).then(function(r){ return (r.data&&r.data.signedUrl)||''; }); }
+    function notifyPartner(){ try{ var p=sb.functions.invoke('gacha-notify',{body:{kind:'capsule'}}); if(p&&p.catch) p.catch(function(){}); }catch(e){} }
+    return {
+      demo:false,
+      me:function(){ return slot; },
+      capsules:function(){ return rpc('gacha_capsules').then(function(rows){ return (rows||[]).map(function(r){ return {id:r.id, by:r.by_slot}; }); }); },
+      add:function(by,c){
+        if(c.kind==='memo'){ return rpc('gacha_add_memo',{p_text:c.text}).then(function(id){ notifyPartner(); return {id:id, by:slot}; }); }
+        if(c.kind==='file'){
+          var ext='mp4'; if(c.blob&&c.blob.name){ var p=c.blob.name.split('.').pop(); if(p&&p.length<=5) ext=p; }
+          var path=pair+'/'+crypto.randomUUID()+'.'+ext;
+          return sb.storage.from('gacha-videos').upload(path,c.blob,{contentType:(c.blob&&c.blob.type)||'video/mp4',upsert:false})
+            .then(function(r){ if(r.error) throw r.error; return rpc('gacha_add_file',{p_path:path,p_dur:(isFinite(c.dur)?c.dur:null)}); })
+            .then(function(id){ notifyPartner(); return {id:id, by:slot}; });
+        }
+        return Promise.reject(new Error('unsupported kind'));
+      },
+      take:function(viewer){
+        return rpc('gacha_take').then(function(r){
+          if(!r) return null;
+          if(r.kind==='memo') return {id:r.id, by:r.by_slot, kind:'memo', text:r.text};
+          return sign(r.video_path).then(function(url){ return {id:r.id, by:r.by_slot, kind:'file', url:url, dur:r.dur, at:new Date(r.opened_at).getTime()}; });
+        });
+      },
+      shelf:function(viewer){
+        return rpc('gacha_shelf').then(function(rows){
+          return Promise.all((rows||[]).map(function(r){ return sign(r.video_path).then(function(url){ return {id:r.id, by:r.by_slot, kind:'file', url:url, dur:r.dur, at:new Date(r.opened_at).getTime()}; }); }));
+        });
+      },
+      wishes:function(){ return rpc('gacha_wishes').then(function(rows){ return (rows||[]).map(function(r){ return {id:r.id, t:r.t, by:r.by_slot, done:!!r.done}; }); }); },
+      toggleWish:function(id){ return rpc('gacha_toggle_wish',{p_id:id}); },
+      deleteWish:function(id){ return rpc('gacha_delete_wish',{p_id:id}); },
+      moveWish:function(id,dir){ return rpc('gacha_move_wish',{p_id:id,p_dir:dir}); },
+      fastForward:function(){ return Promise.resolve(); },
+      onChange:function(cb){}
+    };
+  })();
+  /* ===== Store ここまで ===== */
+
+  var st={me:Store.me(),mode:'home',cur:null,replay:false,draft:null,note:'',warn:'',raf:0,t:0,paused:false,last:0,turn:0,q:0,spin:false};
+  /* 画面が持っている写し。sync() で Store から取り直す */
+  var box=[], shelf={shun:[],ari:[]}, wishes=[];
+  function sync(){ return Promise.all([Store.capsules(),Store.shelf(st.me),Store.wishes()]).then(function(r){ box=r[0]; shelf[st.me]=r[1]; wishes=r[2]; badge(); }); }
+  function refresh(){ sync().then(function(){ if(st.mode==='home') home(true); }).catch(function(){}); }
+  var calm=window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function ms(n){return calm?Math.min(n,120):n;}
+  function other(k){return k==='shun'?'ari':'shun';}
+  function fmt(s){s=Math.max(0,Math.ceil(s));return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
+  function dateLine(){var d=new Date();return (d.getMonth()+1)+'月'+d.getDate()+'日（'+'日月火水木金土'.charAt(d.getDay())+'）';}
+  function capSet(c){cap.className='cap '+c;}
+  function esc(t){ return String(t).replace(/[&<>"]/g,function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]; }); }
+  function pick(text,cls){return '<label class="btn '+cls+'">'+text+'<input type="file" class="pick" accept="video/*"></label>';}
+  function isFile(){return st.cur && st.cur.kind==='file';}
+  function stopV(){ try{ v.pause(); v.removeAttribute('src'); v.load(); }catch(e){} }
+
+  /* やりたいことリスト */
+  function badge(){ $('cnt').textContent=wishes.filter(function(w){ return !w.done; }).length; }
+  function renderList(){
+    $('wl').innerHTML = wishes.length ? wishes.map(function(w,i){
+      return '<li class="'+(w.done?'done':'')+'"><button class="tick" data-act="tick" data-id="'+esc(w.id)+'" aria-label="'+(w.done?'やった、を取り消す':'やった、にする')+'"></button><span><b>'+esc(w.t)+'</b><small>'+(P[w.by]?P[w.by].name:'')+'のメモ</small></span><span class="wctl"><button data-act="up" data-id="'+esc(w.id)+'" aria-label="上へ">↑</button><button data-act="down" data-id="'+esc(w.id)+'" aria-label="下へ">↓</button><button data-act="delwish" data-id="'+esc(w.id)+'" aria-label="消す">×</button></span></li>';
+    }).join('') : '<li class="none">まだありません。メモのカプセルを開けると、ここに並びます。</li>';
+  }
+
+  /* ガチャ台の中の球 */
+  var sim={balls:[],W:0,H:0,prev:0,last:0,pull:0,d:1};
+  function tgt(){ var o=other(st.me); for(var i=0;i<box.length;i++){ if(box[i].by===o) return box[i].id; } return 0; }
+  function simFlags(){ var t=tgt(); sim.balls.forEach(function(b){ b.star=!!b.id && b.id===t; }); }
+  function simSize(){ var d=Math.min(window.devicePixelRatio||1,2); sim.W=glass.clientWidth; sim.H=glass.clientHeight; gl.width=Math.round(sim.W*d); gl.height=Math.round(sim.H*d); sim.d=d; }
+  function simSync(){
+    simSize(); sim.balls=[]; var W=sim.W,H=sim.H,r=W*0.08,i;
+    for(i=0;i<4;i++) sim.balls.push({x:r+6+i*((W-2*r-12)/3),y:H-r,vx:0,vy:0,a:i*1.7,r:r,c:'rgba(255,255,255,.6)',deco:true});
+    box.slice(0,9).forEach(function(c,k){ sim.balls.push({id:c.id,x:W*0.2+((k*0.37)%1)*W*0.6,y:H*0.45-k*6,vx:0,vy:0,a:k,r:W*0.105,c:P[c.by].col}); });
+    simFlags(); for(i=0;i<150;i++) simStep(1/60,0,0);
+  }
+  function simMerge(){
+    var ids={}, have={}; box.forEach(function(c){ ids[c.id]=1; });
+    sim.balls=sim.balls.filter(function(b){ return b.deco || b.exit || ids[b.id]; });
+    sim.balls.forEach(function(b){ if(b.id) have[b.id]=1; });
+    box.forEach(function(c){ if(!have[c.id]) addBall(c); });
+    simFlags();
+  }
+  function addBall(c){ sim.balls.push({id:c.id,x:sim.W/2+6,y:-34,vx:20,vy:420,a:0,r:sim.W*0.105,c:P[c.by].col}); simFlags(); }
+  function simStep(dt,om,pull){
+    var W=sim.W,H=sim.H,B=sim.balls,i,j,b; sim.pull=pull;
+    for(i=0;i<B.length;i++){
+      b=B[i];
+      if(b.exit){ b.vy+=1500*dt; b.y+=b.vy*dt; b.x+=(W/2-b.x)*0.2; continue; }
+      var ax=0, ay=1400;
+      if(om>0){
+        var dx=b.x-W/2, dy=b.y-H, dist=Math.sqrt(dx*dx+dy*dy)||1, f=Math.max(0,1-dist/(W*0.8));
+        ax+=-dy/dist*3.2*om*f; ay+=dx/dist*3.2*om*f;
+        if(b.y>H-b.r*1.7) ay-=2.6*om;
+      }
+      if(b.star && pull>0){ ax+=(W/2-b.x)*pull; ay+=(H-b.r-b.y)*pull; b.vx*=0.9; b.vy*=0.9; }
+      else if(pull>0 && b.y>H*0.3){ var sx=b.x-W/2; if(Math.abs(sx)<W*0.3) ax+=(sx>=0?1:-1)*pull*55; }
+      b.vx=(b.vx+ax*dt)*0.992; b.vy=(b.vy+ay*dt)*0.992;
+      b.x+=b.vx*dt; b.y+=b.vy*dt; b.a+=b.vx/b.r*dt;
+    }
+    for(var it=0;it<3;it++){
+      for(i=0;i<B.length;i++){
+        b=B[i]; if(b.exit) continue;
+        if(b.x<b.r){ b.x=b.r; b.vx=Math.abs(b.vx)*0.4; }
+        if(b.x>W-b.r){ b.x=W-b.r; b.vx=-Math.abs(b.vx)*0.4; }
+        if(b.y<b.r && b.vy<0){ b.y=b.r; b.vy=Math.abs(b.vy)*0.3; }
+        if(b.y>H-b.r){ b.y=H-b.r; b.vy=-Math.abs(b.vy)*0.32; b.vx*=0.97; }
+        for(j=i+1;j<B.length;j++){
+          var c=B[j]; if(c.exit) continue;
+          var nx=c.x-b.x, ny=c.y-b.y, d=Math.sqrt(nx*nx+ny*ny), min=b.r+c.r;
+          if(d>0 && d<min){
+            nx/=d; ny/=d; var o=(min-d)/2, wb=1, wc=1;
+            if(pull>0){ if(b.star){ wb=0.15; wc=1.85; } else if(c.star){ wb=1.85; wc=0.15; } }
+            b.x-=nx*o*wb; b.y-=ny*o*wb; c.x+=nx*o*wc; c.y+=ny*o*wc;
+            var vn=(c.vx-b.vx)*nx+(c.vy-b.vy)*ny;
+            if(vn<0){ var k=-(1.35)*vn/2; b.vx-=k*nx; b.vy-=k*ny; c.vx+=k*nx; c.vy+=k*ny; }
+          }
+        }
+      }
+    }
+    sim.balls=B.filter(function(q){ return !(q.exit && q.y>H+80); });
+  }
+  function simDraw(){
+    var g=gl.getContext('2d'), W=sim.W, H=sim.H; g.setTransform(sim.d,0,0,sim.d,0,0); g.clearRect(0,0,W,H);
+    g.save(); g.translate(W/2,H+6); g.rotate(st.turn*Math.PI/180); g.fillStyle='rgba(29,26,47,.3)';
+    for(var k=0;k<3;k++){ g.rotate(2.0944); g.beginPath(); if(g.roundRect) g.roundRect(-7,-W*0.24,14,W*0.24,7); else g.rect(-7,-W*0.24,14,W*0.24); g.fill(); }
+    g.restore();
+    g.fillStyle='rgba(29,26,47,.85)'; g.beginPath(); g.ellipse(W/2,H+2,W*0.15,9,0,0,6.283); g.fill();
+    for(var i=0;i<sim.balls.length;i++){
+      var b=sim.balls[i]; g.save(); g.translate(b.x,b.y); g.rotate(b.a);
+      g.fillStyle=b.c; g.beginPath(); g.arc(0,0,b.r,Math.PI,0); g.closePath(); g.fill();
+      g.fillStyle=b.deco?b.c:'#fffdf5'; g.beginPath(); g.arc(0,0,b.r,0,Math.PI); g.closePath(); g.fill();
+      g.lineWidth=b.deco?2:3; g.strokeStyle=b.deco?'rgba(29,26,47,.45)':'#1d1a2f'; g.beginPath(); g.arc(0,0,b.r,0,6.283); g.stroke();
+      g.beginPath(); g.moveTo(-b.r,0); g.lineTo(b.r,0); g.stroke();
+      g.fillStyle='rgba(255,255,255,.7)'; g.beginPath(); g.ellipse(-b.r*0.42,-b.r*0.5,b.r*0.26,b.r*0.13,-0.5,0,6.283); g.fill();
+      g.restore();
+    }
+  }
+  function simLoop(now){
+    var dt=Math.min(0.033,(now-sim.last)/1000||0.016); sim.last=now;
+    if(!machine.classList.contains('away') && sim.W){
+      var om=Math.max(0,Math.min(900,(st.turn-sim.prev)/dt)); sim.prev=st.turn;
+      var pull=(st.mode==='home' && st.turn>110) ? 75*(st.turn-110)/250 : 0;
+      simStep(dt/2,om,pull); simStep(dt/2,om,pull); simDraw();
+    }
+    requestAnimationFrame(simLoop);
+  }
+  function jig(){ machine.classList.remove('jig'); void machine.offsetWidth; machine.classList.add('jig'); }
+  function bump(){ sim.balls.forEach(function(b){ if(!b.exit){ b.vy-=150+Math.random()*130; b.vx+=(Math.random()-.5)*180; } }); if(!calm) jig(); }
+  function setRot(){ handle.style.transform='rotate('+st.turn+'deg)'; var q=Math.floor(st.turn/90); if(q>st.q && q<4) bump(); st.q=q; }
+  function resetHandle(){ st.turn=0; st.q=0; sim.prev=0; st.spin=false; handle.style.transform='rotate(0deg)'; }
+  function machineShow(){ machine.className='machine'; resetHandle(); simSync(); }
+  window.addEventListener('resize',function(){ if(sim.W && glass.clientWidth!==sim.W) simSync(); });
+
+  /* あけた動画の棚（開けてから24時間） */
+  function left(it){ var r=it.at+DAY-Date.now(); return r>=3600000 ? 'あと'+Math.ceil(r/3600000)+'時間' : 'あと'+Math.max(1,Math.ceil(r/60000))+'分'; }
+  function renderShelf(newId){
+    var L=shelf[st.me];
+    shelfEl.innerHTML = (st.mode==='home' && L && L.length) ? '<span class="lab">あけた動画</span>'+L.map(function(it){
+      return '<button class="opened'+(it.id===newId?' new':'')+'" data-act="replay" data-id="'+it.id+'" style="--c:'+P[it.by].col+'"><i></i>'+left(it)+'</button>';
+    }).join('')+(Store.demo?'<button class="btn plain ff" data-act="ff">見本用：24時間すすめる</button>':'') : '';
+  }
+  setInterval(function(){ if(st.mode==='home') refresh(); },30000);
+
+  /* ガチャ台の画面 */
+  function home(keepSim){
+    st.mode='home'; st.cur=null; st.replay=false;
+    var o=other(st.me);
+    phone.setAttribute('data-me',st.me); phone.setAttribute('data-from',o);
+    $('ava').textContent=P[st.me].ini; $('whose').textContent=P[st.me].name+'の画面';
+    card.className='card'; memo.className='memo'; capSet('hide');
+    if(keepSim){ machine.className='machine'; resetHandle(); simMerge(); } else { machineShow(); }
+    var n=box.filter(function(c){ return c.by===o; }).length, m=box.length-n;
+    var line = st.warn ? '<p class="warn">'+st.warn+'</p>'
+      : '<p class="soft">'+(st.note || ((n?'ハンドルを指でぐるっと1周まわしてね。':(m?'':'先に自分のカプセルを入れておけます。'))+(m?(n?'<br>':'')+'自分のカプセルは '+m+' こ、'+P[o].name+'を待っています。':'')))+'</p>';
+    copy.innerHTML='<p class="k">'+dateLine()+'</p><h1>'+(n?'<em>'+P[o].name+'</em>のカプセルが '+n+' こ入ってる':'<em>'+P[o].name+'</em>のカプセルは、まだ入ってない')+'</h1>'+line;
+    acts.innerHTML='<button class="btn" data-act="compose">カプセルを入れる</button>'+
+      (Store.demo?'<button class="btn sub" data-act="switch">'+P[o].name+'の画面に切り替える</button>':'')+
+      (n?'<button class="btn plain" data-act="auto">うまく回せないときはここ</button>':'');
+    st.note=''; st.warn='';
+    renderShelf();
+  }
+
+  function autoSpin(){
+    if(st.mode!=='home'||st.spin) return; st.spin=true;
+    var from=st.turn, t0=performance.now();
+    (function step(now){ var k=Math.min(1,(now-t0)/(calm?200:900)); st.turn=from+(360-from)*k; setRot(); if(k<1) requestAnimationFrame(step); else complete(); })(t0);
+  }
+  function complete(){
+    if(st.mode!=='home') return;
+    var o=other(st.me);
+    if(!tgt()){
+      jig();
+      var s=copy.querySelector('.soft,.warn'); if(s){ s.className='warn'; s.textContent='からっぽ。'+P[o].name+'のカプセルは、まだ入っていません。'; }
+      setTimeout(function(){ if(st.mode==='home') resetHandle(); },220);
+      return;
+    }
+    st.mode='taking'; acts.innerHTML=''; shelfEl.innerHTML=''; jig();
+    Store.take(st.me).then(function(c){
+      if(!c){ st.warn='からっぽ。'+P[o].name+'のカプセルは、まだ入っていません。'; return sync().then(function(){ home(); }); }
+      st.cur=c; st.mode='out';
+      box=box.filter(function(x){ return x.id!==c.id; });
+      if(c.kind!=='memo') shelf[st.me].unshift(c);
+      sim.balls.forEach(function(b){ if(b.id===c.id){ b.exit=true; b.vy=260; } });
+      setTimeout(function(){
+        machine.classList.add('away'); capSet('drop');
+        copy.innerHTML='<p class="k">ガチャッ</p><h1><em>'+P[o].name+'</em>のカプセルが出てきた</h1><p class="soft">何が入ってるかな。</p>';
+        acts.innerHTML='<button class="btn" data-act="open">あける</button>';
+      },ms(420));
+    }).catch(function(){ st.warn='取り出せませんでした。もう一度まわしてください。'; home(); });
+  }
+
+  function burst(){
+    var cols=['#f0412f','#2f7bff','#ff5c8a','#fffdf5','#34c38f'];
+    for(var i=0;i<18;i++){
+      var b=document.createElement('i'); b.className='bit';
+      b.style.setProperty('--a',(i*20+Math.random()*14)+'deg'); b.style.setProperty('--d',(90+Math.random()*90)+'px');
+      b.style.background=cols[i%cols.length]; scene.appendChild(b);
+      (function(el){ setTimeout(function(){ el.remove(); },850); })(b);
+    }
+  }
+  function open(){
+    if(st.mode!=='out') return;
+    st.mode='opening'; acts.innerHTML='';
+    capSet('shake');
+    setTimeout(function(){
+      capSet('open'); if(!calm) burst();
+      if(st.cur.kind==='memo'){ showMemo(); return; }
+      startPlay();
+    },ms(450));
+  }
+  function showMemo(){
+    st.mode='memo';
+    var t=$('memoText'); t.value=st.cur.text; t.readOnly=true; $('memoBy').textContent=P[st.cur.by].name+'から';
+    memo.className='memo on read';
+    copy.innerHTML='<p class="k">'+P[st.cur.by].name+'のカプセル</p><h1>やりたいことメモが入ってた</h1><p class="soft">リストに入れると、二人のやりたいことに並びます。</p>';
+    acts.innerHTML='<button class="btn" data-act="keep">リストに入れる</button>';
+  }
+  function keep(){
+    if(st.mode!=='memo') return;
+    sync().catch(function(){});   /* メモは取り出した時点で Store がリストに入れている */
+    var lb=$('listbtn'); lb.classList.remove('pop'); void lb.offsetWidth; lb.classList.add('pop');
+    st.mode='closing'; memo.className='memo'; acts.innerHTML=''; copy.innerHTML='<p class="k">&nbsp;</p>';
+    capSet('empty pop');
+    setTimeout(function(){ capSet('empty roll'); },ms(600));
+    setTimeout(function(){ st.note='メモをリストに入れました。右上の「やりたいこと」から見られます。'; home(); },ms(1300));
+  }
+
+  /* 動画を見る */
+  function startPlay(){
+    st.mode='play';
+    phone.setAttribute('data-from',st.cur.by); $('name').textContent=P[st.cur.by].name;
+    card.setAttribute('data-show',isFile()?'vd':'sm'); card.className='card on';
+    copy.innerHTML='<div class="time"><span class="count" id="left">&nbsp;</span><span class="k" id="hint">'+left(st.cur)+'で消えます</span></div><div class="meter"><i id="fill"></i></div>';
+    acts.innerHTML='<div class="row"><button class="btn sub" data-act="back">↺ 10秒もどす</button><button class="btn sub" data-act="toggle" id="tg">とめる</button></div>'+
+      '<button class="btn" data-act="done">とじる</button>';
+    if(isFile()){ v.muted=false; v.loop=false; v.src=st.cur.url; var pr=v.play(); if(pr&&pr.catch) pr.catch(function(){}); }
+    else { st.t=0; st.paused=false; }
+    st.last=performance.now(); cancelAnimationFrame(st.raf); st.raf=requestAnimationFrame(loop);
+  }
+  var LINES=[[0.4,'おつかれさま！'],[3.4,'今日のことを'],[5.6,'1分だけ話すね。'],[8.6,'聞きのがしたら、','もどしてね。']];
+  function drawSample(t){
+    var g=sm.getContext('2d');
+    g.fillStyle=P[st.cur.by].col; g.fillRect(0,0,300,400);
+    g.fillStyle='rgba(255,255,255,.16)'; for(var y=0;y<400;y+=26){ for(var x=(y/26%2)*13;x<300;x+=26){ g.beginPath(); g.arc(x,y,3,0,6.283); g.fill(); } }
+    g.fillStyle='#fffdf5'; g.strokeStyle='#1d1a2f'; g.lineWidth=5;
+    g.beginPath(); g.arc(150,150,70,0,6.283); g.fill(); g.stroke();
+    var blink=(t%3.2)>3.05; g.fillStyle='#1d1a2f';
+    if(blink){ g.fillRect(118,140,18,5); g.fillRect(164,140,18,5); } else { g.beginPath(); g.arc(127,142,8,0,6.283); g.arc(173,142,8,0,6.283); g.fill(); }
+    var talk=!st.paused && t<SDUR ? 6+10*Math.abs(Math.sin(t*9)) : 4;
+    g.beginPath(); g.ellipse(150,178,15,talk,0,0,6.283); g.fill();
+    var cur=null; for(var k=0;k<LINES.length;k++){ if(t>=LINES[k][0]) cur=LINES[k]; }
+    if(cur){
+      g.textAlign='center'; g.font='24px "Dela Gothic One", sans-serif'; g.lineJoin='round'; g.lineWidth=7; g.strokeStyle='#1d1a2f'; g.fillStyle='#fff';
+      for(var n=1;n<cur.length;n++){ var yy=290+(n-1)*36-(cur.length>2?14:0); g.strokeText(cur[n],150,yy); g.fillText(cur[n],150,yy); }
+    }
+    g.font='700 12px "Zen Maru Gothic", sans-serif'; g.fillStyle='rgba(255,255,255,.85)'; g.textAlign='center'; g.fillText('見本の動画',150,382);
+  }
+  function loop(now){
+    if(st.mode!=='play') return;
+    var t,dur,paused,ended;
+    if(isFile()){ t=v.currentTime; dur=isFinite(v.duration)?v.duration:st.cur.dur; paused=v.paused; ended=v.ended; }
+    else{
+      if(!st.paused){ st.t+=(now-st.last)/1000; if(st.t>=SDUR){ st.t=SDUR; st.paused=true; } }
+      t=st.t; dur=SDUR; paused=st.paused; ended=st.t>=SDUR; drawSample(t);
+    }
+    st.last=now;
+    var l=$('left'), f=$('fill'), tg=$('tg');
+    if(l){
+      var known=dur&&isFinite(dur);
+      l.textContent=ended?'おしまい':(known?'あと '+fmt(dur-t):'再生中');
+      if(f) f.style.width=(known?Math.min(100,t/dur*100):0)+'%';
+      if(tg) tg.textContent=ended?'もう一度':(paused?'つづける':'とめる');
+    }
+    st.raf=requestAnimationFrame(loop);
+  }
+  function back(){
+    if(st.mode!=='play') return;
+    if(isFile()){ try{ v.currentTime=Math.max(0,v.currentTime-10); }catch(e){} var pr=v.play(); if(pr&&pr.catch) pr.catch(function(){}); }
+    else{ st.t=Math.max(0,st.t-10); st.paused=false; }
+  }
+  function toggle(){
+    if(st.mode!=='play') return;
+    if(isFile()){ if(v.ended){ v.currentTime=0; } if(v.paused){ var pr=v.play(); if(pr&&pr.catch) pr.catch(function(){}); } else { v.pause(); } }
+    else{ if(st.t>=SDUR){ st.t=0; st.paused=false; } else { st.paused=!st.paused; } }
+  }
+  v.addEventListener('error',function(){ if(st.mode!=='play'||!isFile()) return; cancelAnimationFrame(st.raf); st.warn='この動画は再生できませんでした。'; home(); });
+  v.addEventListener('contextmenu',function(e){ e.preventDefault(); });
+  function done(){
+    if(st.mode!=='play') return;
+    cancelAnimationFrame(st.raf); stopV();
+    var id=st.cur.id, first=!st.replay;
+    if(first) st.note='あけた動画は24時間、棚からもう一度見られます。';
+    home(); if(first) renderShelf(id);
+  }
+  function replay(id){
+    if(st.mode!=='home') return;
+    var it=null; shelf[st.me].forEach(function(x){ if(String(x.id)===String(id)) it=x; });
+    if(!it) return;
+    st.cur=it; st.replay=true; machine.classList.add('away'); shelfEl.innerHTML='';
+    startPlay();
+  }
+
+  /* カプセルを入れる */
+  function compose(){
+    if(st.mode!=='home') return; st.mode='compose'; shelfEl.innerHTML='';
+    copy.innerHTML='<p class="k">'+P[st.me].name+'のカプセル</p><h1>なにを入れる？</h1><p class="soft">'+P[other(st.me)].name+'が回して開けるまで、中身はひみつ。</p>';
+    acts.innerHTML='<div class="row">'+pick('動画','sub')+'<button class="btn sub" data-act="write">やりたいことメモ</button></div>'+
+      '<div class="row">'+(Store.demo?'<button class="btn plain" data-act="sample">見本の動画を入れる</button>':'<span></span>')+'<button class="btn plain" data-act="cancel">やめる</button></div>';
+  }
+  function write(){
+    if(st.mode!=='compose') return;
+    st.mode='write'; phone.setAttribute('data-from',st.me); machine.classList.add('away');
+    var t=$('memoText'); t.readOnly=false; t.value=''; $('memoBy').textContent=P[st.me].name+'から'; $('memoN').textContent='0/60';
+    memo.className='memo on';
+    copy.innerHTML='<p class="k">メモのカプセル</p><h1>'+P[other(st.me)].name+'とやりたいこと</h1><p class="soft">開けてもらうと、二人のリストに並びます。</p>';
+    acts.innerHTML='<button class="btn" data-act="send">ガチャ台に入れる</button><button class="btn plain" data-act="cancel">やめる</button>';
+  }
+  function ready(){
+    st.mode='ready'; phone.setAttribute('data-from',st.me); $('name').textContent=P[st.me].name;
+    machine.classList.add('away'); card.setAttribute('data-show','vd'); card.className='card on';
+    v.muted=true; v.loop=true; v.src=st.draft.url; var pr=v.play(); if(pr&&pr.catch) pr.catch(function(){});
+    var d=st.draft.dur, len=(isFinite(d)&&d>0)?fmt(d)+' の動画':'動画 1本';
+    var over=(isFinite(d)&&d>180)||(st.draft.blob&&st.draft.blob.size>50*1024*1024);
+    copy.innerHTML='<p class="k">'+len+'</p><h1>カプセルにつめて、'+P[other(st.me)].name+'へ</h1>'+
+      (over?'<p class="warn">3分・50MBをこえています。短くしてから入れてね。</p>':((isFinite(d)&&d>75)?'<p class="warn">1分をこえています。短いほうが毎晩続けやすいです。</p>':'<p class="soft">開けてから24時間で消えます。こちらには残りません。</p>'));
+    acts.innerHTML= over ? '<div class="row">'+pick('撮り直す','plain')+'<button class="btn plain" data-act="cancel">やめる</button></div>'
+      : '<button class="btn" data-act="send">ガチャ台に入れる</button><div class="row">'+pick('撮り直す','plain')+'<button class="btn plain" data-act="cancel">やめる</button></div>';
+  }
+  function dropDraft(){ if(st.draft && st.draft.url){ try{ URL.revokeObjectURL(st.draft.url); }catch(e){} } st.draft=null; }
+  function send(sample){
+    var c, wasAway=machine.classList.contains('away');
+    if(st.mode==='write'){
+      var t=$('memoText').value.replace(/\s+/g,' ').trim();
+      if(!t){ memo.classList.remove('nudge'); void memo.offsetWidth; memo.classList.add('nudge'); return; }
+      c={kind:'memo',text:t};
+    } else if(st.mode==='ready'){ c=st.draft; st.draft=null; }
+    else if(st.mode==='compose' && sample){ c={kind:'sample'}; }
+    else { return; }
+    st.mode='sending'; phone.setAttribute('data-from',st.me); acts.innerHTML='';
+    stopV(); card.className='card'; memo.className='memo';
+    if(wasAway) machineShow();
+    setTimeout(function(){ capSet('into'); },ms(380));
+    var saving=Store.add(st.me,c);
+    setTimeout(function(){
+      saving.then(function(pub){
+        capSet('hide'); box.push(pub); addBall(pub); jig();
+        setTimeout(function(){ st.note='ころん。入りました。'+P[other(st.me)].name+'が回すと出てきます。'; home(true); },ms(900));
+      }).catch(function(){ capSet('hide'); st.warn='入れられませんでした。もう一度ためしてください。'; home(); });
+    },ms(1000));
+  }
+
+  document.addEventListener('click',function(e){
+    var b=e.target.closest('[data-act]'); if(!b) return;
+    var a=b.getAttribute('data-act');
+    if(a==='open') open();
+    else if(a==='auto') autoSpin();
+    else if(a==='back') back();
+    else if(a==='toggle') toggle();
+    else if(a==='done') done();
+    else if(a==='keep') keep();
+    else if(a==='compose') compose();
+    else if(a==='write') write();
+    else if(a==='sample') send(true);
+    else if(a==='send') send(false);
+    else if(a==='cancel'){ if(st.mode==='compose'||st.mode==='write'||st.mode==='ready'){ var away=machine.classList.contains('away'); dropDraft(); stopV(); home(!away); } }
+    else if(a==='switch'){ if(st.mode==='home' && Store.demo){ st.me=other(st.me); sync().then(function(){ home(); }); } }
+    else if(a==='replay') replay(b.getAttribute('data-id'));
+    else if(a==='ff'){ if(st.mode==='home'){ Store.fastForward(st.me).then(sync).then(function(){
+      var s=copy.querySelector('.soft,.warn'); if(s){ s.className='soft'; s.textContent='24時間たって、あけた動画が消えました。'; } renderShelf(); }); } }
+    else if(a==='list'){ renderList(); $('list').classList.add('on'); }
+    else if(a==='closelist'){ $('list').classList.remove('on'); }
+    else if(a==='tick'){ Store.toggleWish(b.getAttribute('data-id')).then(sync).then(renderList); }
+    else if(a==='up'){ Store.moveWish(b.getAttribute('data-id'),-1).then(sync).then(renderList); }
+    else if(a==='down'){ Store.moveWish(b.getAttribute('data-id'),1).then(sync).then(renderList); }
+    else if(a==='delwish'){ Store.deleteWish(b.getAttribute('data-id')).then(sync).then(renderList); }
+  });
+  $('memoText').addEventListener('input',function(){ $('memoN').textContent=this.value.length+'/60'; });
+  document.addEventListener('change',function(e){
+    if(!e.target.classList || !e.target.classList.contains('pick')) return;
+    if(st.mode!=='compose' && st.mode!=='ready') return;
+    var f=e.target.files&&e.target.files[0]; if(!f) return;
+    stopV(); dropDraft();
+    var url=URL.createObjectURL(f); st.draft={kind:'file',url:url,dur:NaN,blob:f};
+    var probe=document.createElement('video'); probe.preload='metadata';
+    probe.onloadedmetadata=function(){ if(st.draft) st.draft.dur=probe.duration; ready(); };
+    probe.onerror=function(){ ready(); };
+    probe.src=url;
+  });
+
+  /* ハンドルを指でまわす（右回りだけ） */
+  var drag=null;
+  function ang(e){ return Math.atan2(e.clientY-drag.cy,e.clientX-drag.cx)*180/Math.PI; }
+  handle.addEventListener('pointerdown',function(e){
+    if(st.mode!=='home'||st.spin) return;
+    try{ handle.setPointerCapture(e.pointerId); }catch(x){}
+    var r=handle.getBoundingClientRect(); drag={cx:r.left+r.width/2,cy:r.top+r.height/2,moved:0}; drag.a=ang(e); e.preventDefault();
+  });
+  handle.addEventListener('pointermove',function(e){
+    if(!drag) return;
+    var a=ang(e), d=a-drag.a; if(d>180) d-=360; if(d<-180) d+=360;
+    drag.a=a; drag.moved+=Math.abs(d); if(d<=0) return;
+    st.turn+=d; setRot();
+    if(st.turn>=360){ drag=null; st.skipClick=true; complete(); }
+  });
+  function up(){ if(!drag) return; var m=drag.moved; drag=null; st.skipClick=true; if(m<12) autoSpin(); }
+  handle.addEventListener('pointerup',up); handle.addEventListener('pointercancel',up);
+  handle.addEventListener('click',function(){ if(st.skipClick){ st.skipClick=false; return; } autoSpin(); });
+
+  Store.onChange(function(){ if(st.mode==='home') refresh(); });
+  sync().then(function(){ home(); });
+  requestAnimationFrame(simLoop);
+};
+</script>
+<div id="auth" class="authwrap" hidden>
+  <form id="authForm" class="authcard">
+    <h2>1分動画ガチャ</h2>
+    <p class="asoft">ふたり専用。ログインしてね。</p>
+    <input id="authEmail" type="email" placeholder="メールアドレス" autocomplete="username" required>
+    <input id="authPass" type="password" placeholder="パスワード" autocomplete="current-password" required>
+    <button class="btn" type="submit">ログイン</button>
+    <p class="warn" id="authErr"></p>
+  </form>
+</div>
+<script>
+(function(){
+  var CFG=window.GACHA_CONFIG;
+  var sb=window.supabase.createClient(CFG.SUPABASE_URL, CFG.SUPABASE_ANON_KEY);
+  window.__sb=sb;
+  var authEl=document.getElementById('auth'), errEl=document.getElementById('authErr');
+  function showAuth(msg){ authEl.hidden=false; if(msg) errEl.textContent=msg; }
+  function urlB64ToUint8(b64){ var pad='='.repeat((4-b64.length%4)%4); var s=(b64+pad).replace(/-/g,'+').replace(/_/g,'/'); var raw=atob(s); var arr=new Uint8Array(raw.length); for(var i=0;i<raw.length;i++) arr[i]=raw.charCodeAt(i); return arr; }
+  function saveSub(sub){ var j=sub.toJSON(); if(!j||!j.keys) return Promise.resolve(); return sb.from('push_subscriptions').upsert({user_id:window.__uid, endpoint:j.endpoint, p256dh:j.keys.p256dh, auth:j.keys.auth},{onConflict:'endpoint'}); }
+  function subscribePush(){ if(!('serviceWorker' in navigator)||!('PushManager' in window)) return Promise.resolve(false);
+    return navigator.serviceWorker.ready.then(function(reg){ return reg.pushManager.getSubscription().then(function(sub){ if(sub) return sub; return reg.pushManager.subscribe({userVisibleOnly:true, applicationServerKey:urlB64ToUint8(CFG.VAPID_PUBLIC_KEY)}); }); }).then(function(sub){ return saveSub(sub); }).then(function(){ return true; }).catch(function(){ return false; }); }
+  function refreshPushBtn(){ var b=document.getElementById('pushBtn'); if(!b) return; if(!('PushManager' in window)){ b.textContent='通知はこの端末では使えません'; return; } b.textContent=(window.Notification&&Notification.permission==='granted')?'通知オン':'通知をオンにする'; }
+  function setupFoot(){ var foot=document.getElementById('foot'); if(!foot) return;
+    foot.innerHTML='開けた動画は24時間で消えます。<br><button class="footbtn" id="pushBtn" type="button">通知をオンにする</button> · <button class="footbtn" id="logoutBtn" type="button">ログアウト</button>';
+    document.getElementById('pushBtn').addEventListener('click',function(){ if(window.Notification&&Notification.permission==='granted'){ subscribePush().then(refreshPushBtn); return; } if(window.Notification){ Notification.requestPermission().then(function(p){ if(p==='granted') subscribePush().then(refreshPushBtn); refreshPushBtn(); }); } });
+    document.getElementById('logoutBtn').addEventListener('click',function(){ sb.auth.signOut().then(function(){ location.reload(); }); });
+    refreshPushBtn();
+    if(window.Notification&&Notification.permission==='granted') subscribePush();
+  }
+  function enter(session){
+    window.__uid=session.user.id;
+    return sb.from('members').select('slot,pair_id').eq('user_id',session.user.id).single().then(function(r){
+      if(r.error||!r.data){ showAuth('ペア登録がまだです。モコに伝えてね。'); return; }
+      window.__slot=r.data.slot; window.__pair=r.data.pair_id;
+      authEl.hidden=true;
+      if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js').catch(function(){}); }
+      window.__startGacha();
+      setupFoot();
+    });
+  }
+  document.getElementById('authForm').addEventListener('submit',function(e){ e.preventDefault(); errEl.textContent='';
+    var email=document.getElementById('authEmail').value.trim(), pass=document.getElementById('authPass').value;
+    sb.auth.signInWithPassword({email:email,password:pass}).then(function(r){ if(r.error){ errEl.textContent='ログインできませんでした。メールとパスワードを確認してね。'; return; } enter(r.data.session); });
+  });
+  sb.auth.getSession().then(function(r){ var s=r.data&&r.data.session; if(s) enter(s); else showAuth(); });
+})();
+</script>
+</body>
+</html>

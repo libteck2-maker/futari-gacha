@@ -1,0 +1,5 @@
+window.GACHA_CONFIG = {
+  SUPABASE_URL: "https://tftdiytonolvqrygmghm.supabase.co",
+  SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRmdGRpeXRvbm9sdnFyeWdtZ2htIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTQ2NDI3MTcsImV4cCI6MjExMDIxODcxN30.-dmP1D7iqyclrIwOE38-9FAHzau0nricWI-fj752cdk",
+  VAPID_PUBLIC_KEY: "BDMvv_2jFeAVoXD9ubL8nn0ejnooiiQa2skDBfSongp7MeWTdsWjpVDAzTaSorLMOBGG7V5k979LZypUvm3vieE"
+};
