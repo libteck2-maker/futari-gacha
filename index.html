@@ -22,7 +22,7 @@ body{margin:0;color:var(--ink);font-family:var(--body);font-weight:500;font-size
   background-color:var(--bg);background-image:radial-gradient(var(--dots) 2.5px,transparent 3px);background-size:22px 22px;overflow:hidden}
 .phone{max-width:440px;height:100%;margin:0 auto;display:flex;flex-direction:column}
 .phone[data-me="shun"]{--me:var(--shun)} .phone[data-me="ari"]{--me:var(--ari)}
-.phone[data-from="shun"]{--from:var(--shun)} .phone[data-from="ari"]{--from:var(--ari)} .phone[data-from="memo"]{--from:#f2b134}
+.phone[data-from="shun"]{--from:var(--shun)} .phone[data-from="ari"]{--from:var(--ari)} .phone[data-from="memo0"]{--from:#f2b134} .phone[data-from="memo1"]{--from:#7bc96f} .phone[data-from="memo2"]{--from:#ff8a5c} .phone[data-from="memo3"]{--from:#9b7bea} .phone[data-from="memo4"]{--from:#2ec4b6}
 
 .bar{display:flex;justify-content:space-between;align-items:center;padding:14px 18px 0;font-size:13px;font-weight:700}
 .who{display:flex;align-items:center;gap:8px}
@@ -292,14 +292,14 @@ window.__startGacha=function(){
       me:function(){ return slot; },
       capsules:function(){ return rpc('gacha_capsules').then(function(rows){ return (rows||[]).map(function(r){ return {id:r.id, by:r.by_slot, kind:r.kind}; }); }); },
       add:function(by,c){
-        if(c.kind==='memo'){ return rpc('gacha_add_memo',{p_text:c.text}).then(function(id){ notifyPartner(); return {id:id, by:slot}; }); }
+        if(c.kind==='memo'){ return rpc('gacha_add_memo',{p_text:c.text}).then(function(id){ notifyPartner(); return {id:id, by:slot, kind:'memo'}; }); }
         if(c.kind==='file'){
           var ext='mp4'; if(c.blob&&c.blob.name){ var p=c.blob.name.split('.').pop(); if(p&&p.length<=5) ext=p; }
           var path=pair+'/'+crypto.randomUUID()+'.'+ext;
           var up=function(force){ return sb.storage.from('gacha-videos').upload(path,c.blob,{contentType:(c.blob&&c.blob.type)||'video/mp4',upsert:!!force}).then(function(r){ if(r.error) throw r.error; }); };
           return up(false).catch(function(){ return new Promise(function(res){ setTimeout(res,1500); }).then(function(){ return up(true); }); })
             .then(function(){ return rpc('gacha_add_file',{p_path:path,p_dur:(isFinite(c.dur)?c.dur:null)}); })
-            .then(function(id){ notifyPartner(); return {id:id, by:slot}; });
+            .then(function(id){ notifyPartner(); return {id:id, by:slot, kind:'file'}; });
         }
         return Promise.reject(new Error('unsupported kind'));
       },
@@ -368,13 +368,15 @@ window.__startGacha=function(){
 
   /* ガチャ台の中の球 */
   var sim={balls:[],W:0,H:0,prev:0,last:0,pull:0,d:1};
+  var MEMO_COLS=['#f2b134','#7bc96f','#ff8a5c','#9b7bea','#2ec4b6'];
+  function memoIdx(id){ var h=0, s=String(id); for(var i=0;i<s.length;i++){ h=(h*31+s.charCodeAt(i))|0; } return Math.abs(h)%5; }
   function tgt(){ var o=other(st.me); for(var i=0;i<box.length;i++){ if(box[i].by===o && box[i].kind!=='memo') return box[i].id; } for(var j=0;j<box.length;j++){ if(box[j].kind==='memo') return -1; } return 0; }
   function simFlags(){ var t=tgt(); sim.balls.forEach(function(b){ b.star=!!b.id && b.id===t; }); }
   function simSize(){ var d=Math.min(window.devicePixelRatio||1,2); sim.W=glass.clientWidth; sim.H=glass.clientHeight; gl.width=Math.round(sim.W*d); gl.height=Math.round(sim.H*d); sim.d=d; }
   function simSync(){
     simSize(); sim.balls=[]; var W=sim.W,H=sim.H,r=W*0.08,i;
     for(i=0;i<4;i++) sim.balls.push({x:r+6+i*((W-2*r-12)/3),y:H-r,vx:0,vy:0,a:i*1.7,r:r,c:'rgba(255,255,255,.6)',deco:true});
-    box.slice(0,9).forEach(function(c,k){ sim.balls.push({id:c.id,x:W*0.2+((k*0.37)%1)*W*0.6,y:H*0.45-k*6,vx:0,vy:0,a:k,r:(c.kind!=='memo'?W*0.12:W*0.105),vid:c.kind!=='memo',c:(c.kind==='memo'?'#f2b134':P[c.by].col)}); });
+    box.slice(0,9).forEach(function(c,k){ sim.balls.push({id:c.id,x:W*0.2+((k*0.37)%1)*W*0.6,y:H*0.45-k*6,vx:0,vy:0,a:k,r:(c.kind!=='memo'?W*0.12:W*0.105),vid:c.kind!=='memo',c:(c.kind==='memo'?MEMO_COLS[memoIdx(c.id)]:P[c.by].col)}); });
     simFlags(); for(i=0;i<150;i++) simStep(1/60,0,0);
   }
   function simMerge(){
@@ -384,7 +386,7 @@ window.__startGacha=function(){
     box.forEach(function(c){ if(!have[c.id]) addBall(c); });
     simFlags();
   }
-  function addBall(c){ sim.balls.push({id:c.id,x:sim.W/2+6,y:-34,vx:20,vy:420,a:0,r:(c.kind!=='memo'?sim.W*0.12:sim.W*0.105),vid:c.kind!=='memo',c:(c.kind==='memo'?'#f2b134':P[c.by].col)}); simFlags(); }
+  function addBall(c){ sim.balls.push({id:c.id,x:sim.W/2+6,y:-34,vx:20,vy:420,a:0,r:(c.kind!=='memo'?sim.W*0.12:sim.W*0.105),vid:c.kind!=='memo',c:(c.kind==='memo'?MEMO_COLS[memoIdx(c.id)]:P[c.by].col)}); simFlags(); }
   function simStep(dt,om,pull){
     var W=sim.W,H=sim.H,B=sim.balls,i,j,b; sim.pull=pull;
     for(i=0;i<B.length;i++){
@@ -517,7 +519,7 @@ window.__startGacha=function(){
       sim.balls.forEach(function(b){ if(b.id===c.id){ b.exit=true; b.vy=260; } });
       setTimeout(function(){
         cap.style.setProperty('--lx',(Math.round(Math.random()*28-14))+'px'); cap.style.setProperty('--ly',(Math.round(Math.random()*10-5))+'px'); cap.style.setProperty('--lr',(Math.round(Math.random()*32-16))+'deg');
-        phone.setAttribute('data-from', c.kind==='memo'?'memo':c.by); machine.classList.add('away'); capSet('drop');
+        phone.setAttribute('data-from', c.kind==='memo'?('memo'+memoIdx(c.id)):c.by); machine.classList.add('away'); capSet('drop');
         copy.innerHTML='<p class="k">ガチャッ</p><h1>'+(c.kind==='memo'?'カプセルが出てきた':'<em>'+P[o].name+'</em>のカプセルが出てきた')+'</h1><p class="soft">何が入ってるかな。</p>';
         acts.innerHTML='<button class="btn" data-act="open">あける</button>';
       },ms(420));
