@@ -49,29 +49,70 @@ body{margin:0;color:var(--ink);font-family:var(--body);font-weight:500;font-size
 .cap.pop{animation:pop .4s cubic-bezier(.3,1.6,.5,1) both}
 .cap.roll{animation:roll .85s cubic-bezier(.5,0,.8,.4) forwards;pointer-events:none}
 @keyframes arrive{from{transform:translateX(-110vw) rotate(-560deg)}70%{transform:translateX(10px) rotate(12deg)}to{transform:none}}
-@keyframes wob{0%,60%,100%{transform:rotate(0)}70%{transform:rotate(-9deg)}80%{transform:rotate(8deg)}90%{transform:rotate(-4deg)}}
+@keyframes wob{0%,60%,100%{transform:translate(var(--lx,0px),var(--ly,0px)) rotate(var(--lr,0deg))}70%{transform:translate(var(--lx,0px),var(--ly,0px)) rotate(calc(var(--lr,0deg) - 9deg))}80%{transform:translate(var(--lx,0px),var(--ly,0px)) rotate(calc(var(--lr,0deg) + 8deg))}90%{transform:translate(var(--lx,0px),var(--ly,0px)) rotate(calc(var(--lr,0deg) - 4deg))}}
 @keyframes shake{0%,100%{transform:translateX(0) rotate(0)}15%{transform:translateX(-9px) rotate(-8deg)}30%{transform:translateX(9px) rotate(8deg)}45%{transform:translateX(-8px) rotate(-7deg)}60%{transform:translateX(8px) rotate(7deg)}80%{transform:translateX(-4px) rotate(-3deg) scale(1.08)}}
 @keyframes pop{from{transform:scale(0)}to{transform:scale(1)}}
 @keyframes roll{to{transform:translateX(110vw) rotate(560deg)}}
 
-.machine{width:min(70vw,250px);display:flex;flex-direction:column;transition:transform .45s cubic-bezier(.4,0,.2,1),opacity .3s}
+.machine{width:min(74vw,258px);position:relative;transition:transform .45s cubic-bezier(.4,0,.2,1),opacity .3s}
 .machine.away{opacity:0;transform:translateY(-22px) scale(.86);pointer-events:none}
 .machine.jig{animation:jig .32s}
 @keyframes jig{25%{transform:translateX(-5px) rotate(-1.5deg)}50%{transform:translateX(5px) rotate(1.5deg)}75%{transform:translateX(-3px)}}
-.glass{height:132px;border:4px solid var(--ink);border-bottom:0;border-radius:28px 28px 0 0;background:rgba(255,255,255,.6);position:relative;overflow:hidden}
+.glass{aspect-ratio:340/215;border:4px solid var(--ink);border-bottom:0;border-radius:30px 30px 0 0;background:#dceef5;position:relative;overflow:hidden}
 #gl{position:absolute;inset:0;width:100%;height:100%;display:block}
 .glass::after{content:"";position:absolute;left:16px;top:14px;width:14px;height:54px;border-radius:7px;background:rgba(255,255,255,.8);transform:rotate(18deg)}
-.mbody{height:150px;background:var(--red);border:4px solid var(--ink);border-radius:0 0 22px 22px;position:relative;box-shadow:7px 7px 0 var(--ink)}
-.plate{position:absolute;left:12px;top:10px;background:var(--paper);border:3px solid var(--ink);border-radius:8px;font-family:var(--display);font-size:12px;line-height:1.8;padding:0 8px}
-.turnme{position:absolute;left:12px;bottom:10px;color:#fff;font-size:12px;font-weight:700;line-height:1.3}
-.handle{position:absolute;left:50%;top:50%;width:96px;height:96px;margin:-42px 0 0 -48px;border-radius:50%;background:var(--paper);border:4px solid var(--ink);touch-action:none;cursor:grab;padding:0;-webkit-tap-highlight-color:transparent;box-shadow:0 5px 0 rgba(29,26,47,.35)}
-.handle::before{content:"";position:absolute;left:7px;right:7px;top:50%;height:22px;margin-top:-11px;background:var(--ink);border-radius:11px}
-.handle::after{content:"";position:absolute;right:12px;top:50%;width:12px;height:12px;margin-top:-6px;border-radius:50%;background:var(--bg)}
+.mbody{aspect-ratio:340/285;background:#f4f6f8;border:4px solid var(--ink);border-radius:0 0 22px 22px;position:relative;box-shadow:7px 7px 0 var(--ink)}
+.bodysvg{position:absolute;inset:0;width:100%;height:100%}
+.mcard{position:absolute;left:30.6%;top:8.4%;width:38.8%;height:26.4%;background:linear-gradient(160deg,#f4513a,#d92c1c);border:3.5px solid var(--ink);border-radius:12px;transform:rotate(-2deg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3%;pointer-events:none;z-index:2;box-shadow:0 3px 0 rgba(29,26,47,.25)}
+.mcard .emblem{width:46%;aspect-ratio:1;background:#fff;border-radius:50%;display:grid;place-items:center}
+.mcard .emblem svg{width:80%;height:80%;display:block}
+.mcard .logo{font-family:var(--display);color:#fff;font-size:clamp(13px,5vw,20px);line-height:1.05;letter-spacing:.02em;white-space:nowrap;text-shadow:2px 0 0 var(--ink),-2px 0 0 var(--ink),0 2px 0 var(--ink),0 -2px 0 var(--ink),2px 2px 0 var(--ink)}
+.handle{position:absolute;left:44.1%;top:63.6%;width:16.5%;aspect-ratio:1;translate:-50% -50%;background:none;border:0;touch-action:none;cursor:grab;padding:0;-webkit-tap-highlight-color:transparent;z-index:3}
+.handle svg{width:100%;height:100%;display:block;filter:drop-shadow(0 3px 0 rgba(29,26,47,.3))}
+.machine.ready .handle svg{filter:drop-shadow(0 0 7px rgba(245,179,1,.95))}
+.slothit{position:absolute;left:70%;top:52.8%;width:13.5%;aspect-ratio:1;translate:-50% -50%;background:none;border:0;border-radius:50%;cursor:pointer;z-index:3;-webkit-tap-highlight-color:transparent}
+.slothit.pulse{animation:slotp .45s ease-in-out 2}
+@keyframes slotp{50%{box-shadow:0 0 0 7px rgba(245,179,1,.8)}}
+.slotcoin{position:absolute;left:70%;top:17.2%;width:4.4%;height:10.5%;translate:-50% -50%;background:linear-gradient(90deg,#9aa3ad,#e8edf1,#9aa3ad);border:2px solid var(--ink);border-radius:3px;opacity:0;transition:opacity .2s;z-index:2}
+.machine.hascoin .slotcoin{opacity:1}
 .handle:focus-visible{outline:3px solid var(--shun);outline-offset:3px}
-.chute{position:absolute;right:12px;bottom:10px;width:54px;height:38px;border-radius:10px 10px 4px 4px;background:var(--ink)}
+.retbtn{position:absolute;left:69.7%;top:68.4%;width:9.5%;aspect-ratio:1;translate:-50% -50%;border-radius:50%;border:3px solid var(--ink);background:radial-gradient(circle at 35% 30%,#f2f5f7,#aeb8c0);cursor:pointer;z-index:3;padding:0;-webkit-tap-highlight-color:transparent}
+.retbtn::after{content:"";position:absolute;left:50%;top:50%;width:44%;height:9%;translate:-50% -50%;background:var(--ink);border-radius:3px}
+.retbtn:active{scale:.92}
+.cupcoin{position:absolute;left:69.7%;top:70.2%;width:12.5%;aspect-ratio:1;translate:-50% -50%;opacity:0;pointer-events:none;z-index:2;cursor:pointer;background:none;border:0;padding:0}
+.cupcoin svg{width:100%;height:100%;display:block}
+.cupcoin.on{opacity:1;pointer-events:auto}
+.cupcoin.drop{animation:cupd .5s cubic-bezier(.2,.9,.3,1)}
+@keyframes cupd{from{transform:translateY(-44px)}60%{transform:translateY(3px)}to{transform:none}}
+.coinlayer{position:absolute;inset:0;pointer-events:none;z-index:4}
+.stackcoin{position:absolute;left:84.4%;top:91%;width:13.5%;aspect-ratio:1;translate:-50% -50%;opacity:.85}
+.stackcoin svg{width:100%;height:100%;display:block}
+.fcoin{position:absolute;left:86.5%;top:92.5%;width:14.5%;aspect-ratio:1;translate:-50% -50%;background:none;border:0;padding:0;cursor:pointer;pointer-events:auto;-webkit-tap-highlight-color:transparent;perspective:320px}
+.fcoin.drag{transition:none;z-index:6}
+.fcoin.inserting{transition:left .3s,top .3s,opacity .3s,scale .3s;scale:.25;opacity:.15;z-index:6}
+.fcoin .flip{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .45s cubic-bezier(.3,1.3,.5,1)}
+.fcoin.flipped{z-index:7;translate:-98% -72%}
+.fcoin.flipped .flip{transform:rotateY(180deg) scale(2.05)}
+.fcoin .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.fcoin .face svg{width:100%;height:100%;display:block}
+.fcoin .face.back{transform:rotateY(180deg)}
+.fcoin .ctext{position:absolute;inset:16%;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:700;color:#4a4232;line-height:1.45;word-break:break-all;overflow:hidden}
+.chips{display:flex;gap:8px;align-items:center}
+.chips:empty{display:none}
+.chip{display:inline-flex;align-items:center;gap:5px;background:#fff;border:2.5px solid var(--ink);border-radius:999px;padding:1px 10px 1px 5px;font-family:var(--display);font-size:13px;box-shadow:2px 2px 0 var(--ink)}
+.chip .ci{width:19px;height:19px;border-radius:50%;border:2px solid var(--ink);flex:none}
+.chip .capic{background:linear-gradient(var(--me) 0 50%,#fffdf5 50% 100%)}
+.chip .coinic{background:radial-gradient(circle at 35% 30%,#f2f5f7,#aeb8c0)}
+.coinbig{display:none;width:86px;margin:0 auto}
+.coinview{width:min(62vw,230px);aspect-ratio:1;position:relative;transform:scale(0) rotate(8deg);opacity:0;pointer-events:none;transition:transform .45s cubic-bezier(.25,1.5,.45,1),opacity .2s}
+.coinview.on{transform:none;opacity:1;pointer-events:auto}
+.coinview svg{width:100%;height:100%;display:block}
+.coinview .cvtext{position:absolute;inset:17%;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:700;font-size:16.5px;line-height:1.6;color:#4a4232;word-break:break-all}
+.memo.praise .coinbig{display:block}
+.coinbig svg{width:100%;height:auto;display:block}
 .cap.drop{animation:drop .75s cubic-bezier(.2,.9,.3,1) both,wob 2.4s 1s ease-in-out infinite}
 .cap.into{animation:into .62s cubic-bezier(.5,0,.7,1) forwards;pointer-events:none}
-@keyframes drop{from{transform:translate(74px,112px) scale(.26)}60%{transform:translate(0,12px) scale(1.07)}to{transform:none}}
+@keyframes drop{from{transform:translate(-38px,116px) scale(.26)}60%{transform:translate(calc(var(--lx,0px)*.3),calc(var(--ly,0px)*.3 + 10px)) scale(1.07) rotate(var(--lr,0deg))}to{transform:translate(var(--lx,0px),var(--ly,0px)) rotate(var(--lr,0deg))}}
 @keyframes into{from{transform:translateY(-70vh)}85%{opacity:1}to{transform:translateY(-150px) scale(.3);opacity:0}}
 .card{height:min(100%,400px);aspect-ratio:3/4;max-width:100%;border:4px solid var(--ink);border-radius:24px;overflow:hidden;background:#17142a;box-shadow:7px 7px 0 var(--ink);position:relative;transform:scale(0) rotate(-8deg);opacity:0;pointer-events:none;transition:transform .5s cubic-bezier(.25,1.5,.45,1),opacity .2s}
 .card.on{transform:none;opacity:1}
@@ -128,7 +169,7 @@ h2{font-family:var(--display);font-weight:400;font-size:20px;margin:0}
 .opened.new{animation:lpop .5s cubic-bezier(.3,1.6,.5,1)}
 .btn.ff{width:auto;flex:none;font-size:12px;padding:2px 4px;margin-left:auto}
 .sheet{background:var(--paper);border:4px solid var(--ink);border-bottom:0;border-radius:28px 28px 0 0;padding:18px 20px 14px;display:flex;flex-direction:column;gap:12px}
-.copy{min-height:92px;display:flex;flex-direction:column;gap:4px;justify-content:center}
+.copy{min-height:30px;display:flex;flex-direction:column;gap:4px;justify-content:center}
 .k{margin:0;font-size:13px;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
 h1{font-family:var(--display);font-weight:400;font-size:23px;line-height:1.4;margin:0;text-wrap:balance}
 h1 em{font-style:normal;color:var(--from)}
@@ -153,8 +194,8 @@ label.btn input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:
 .btn.spin .dial{animation:spin .6s cubic-bezier(.4,0,.2,1)}
 @keyframes spin{to{transform:rotate(360deg)}}
 .foot{font-size:11.5px;color:var(--muted);text-align:center;line-height:1.5}
-@media (max-height:700px){.machine{width:200px}.glass{height:104px}.mbody{height:128px}.handle{width:80px;height:80px;margin:-34px 0 0 -40px}}
-@media (max-height:660px){.copy{min-height:88px} h1{font-size:20px} .cap{transform-origin:center} .count{font-size:28px}}
+@media (max-height:700px){.machine{width:208px}}
+@media (max-height:660px){h1{font-size:20px} .cap{transform-origin:center} .count{font-size:28px}}
 .wctl{display:flex;flex-direction:column;gap:4px}
 .wctl button{font:inherit;font-size:13px;line-height:1;width:30px;height:26px;border:2.5px solid var(--ink);border-radius:8px;background:#fff;cursor:pointer;color:var(--ink);padding:0}
 .authwrap{position:fixed;inset:0;z-index:20;display:grid;place-items:center;background:rgba(29,26,47,.45);padding:18px}
@@ -181,12 +222,16 @@ label.btn input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:
     <div class="machine has" id="machine">
       <div class="glass" id="glass"><canvas id="gl"></canvas>
       </div>
+      <div class="mcard" aria-hidden="true"><span class="emblem"><svg viewBox="0 0 48 48"><path d="M9 22a16 16 0 0 1 30 0z" fill="#ff5c8a" stroke="#1d1a2f" stroke-width="2.4"/><path d="M9 22a16 16 0 0 0 30 0z" fill="#fffdf5" stroke="#1d1a2f" stroke-width="2.4"/><ellipse cx="17" cy="14.5" rx="4" ry="2.1" fill="rgba(255,255,255,.85)" transform="rotate(-24 17 14.5)"/></svg></span><span class="logo">ガッチャ</span></div>
       <div class="mbody">
-        <span class="plate">1回 1分</span>
-        <button class="handle" id="handle" aria-label="ハンドルをまわす"></button>
-        <span class="turnme">ぐるっと<br>1周</span>
-        <span class="chute"></span>
+        <svg class="bodysvg" viewBox="0 0 340 285" aria-hidden="true"><defs><linearGradient id="silv" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eef2f5"/><stop offset=".5" stop-color="#c3ccd4"/><stop offset="1" stop-color="#98a4ae"/></linearGradient></defs><rect x="74" y="20" width="192" height="148" rx="14" fill="#ffffff" stroke="#d7dde5" stroke-width="2"/><rect x="80" y="31" width="42" height="60" rx="7" fill="#2f7bff"/><text x="101" y="57" text-anchor="middle" font-size="9.5" font-weight="700" fill="#ffffff">COIN</text><text x="101" y="77" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">1まい</text><circle cx="150" cy="103" r="41" fill="#ffffff" stroke="#1d1a2f" stroke-width="3.5"/><path d="M150 62 A41 41 0 0 1 191 103" fill="none" stroke="#f5b301" stroke-width="7"/><path d="M109 103 A41 41 0 0 0 150 144" fill="none" stroke="#2f7bff" stroke-width="7"/><circle cx="238" cy="49" r="21" fill="url(#silv)" stroke="#1d1a2f" stroke-width="3"/><rect x="235.5" y="33" width="5" height="32" rx="2.5" fill="#1d1a2f"/><rect x="73" y="167" width="98" height="74" rx="10" fill="#8a5a33"/><rect x="73" y="167" width="98" height="16" rx="8" fill="rgba(0,0,0,.28)"/><ellipse cx="122" cy="216" rx="34" ry="9" fill="rgba(0,0,0,.22)"/><path d="M202 179 h70 v47 a10 10 0 0 1 -10 10 h-50 a10 10 0 0 1 -10 -10 z" fill="#dfe5ea" stroke="#c3ccd4" stroke-width="2"/><rect x="202" y="173" width="70" height="9" rx="4.5" fill="#eef2f5" stroke="#c3ccd4" stroke-width="2"/><rect x="210" y="222" width="54" height="6" rx="3" fill="#ffffff"/><circle cx="18" cy="18" r="3.4" fill="#c3ccd4"/><circle cx="322" cy="18" r="3.4" fill="#c3ccd4"/><circle cx="18" cy="267" r="3.4" fill="#c3ccd4"/><circle cx="322" cy="267" r="3.4" fill="#c3ccd4"/></svg>
+        <span class="slotcoin" id="slotCoin"></span>
+        <button class="cupcoin" id="cupCoin" aria-label="返却口のコイン"><svg viewBox="0 0 48 48"><defs><radialGradient id="cgf" cx="0.38" cy="0.32" r="0.9"><stop offset="0" stop-color="#f4f7f9"/><stop offset=".6" stop-color="#ccd4db"/><stop offset="1" stop-color="#9aa7b1"/></radialGradient></defs><circle cx="24" cy="24" r="21" fill="url(#cgf)" stroke="#1d1a2f" stroke-width="2.5"/><circle cx="24" cy="24" r="16.5" fill="none" stroke="rgba(29,26,47,.35)" stroke-width="1.6"/><path d="M11 21a15 15 0 0 1 26 0z" fill="#ff5c8a" stroke="#1d1a2f" stroke-width="2"/><path d="M11 21h26" stroke="#1d1a2f" stroke-width="2"/><ellipse cx="17" cy="15" rx="4" ry="2.2" fill="rgba(255,255,255,.8)" transform="rotate(-24 17 15)"/></svg></button>
       </div>
+      <button class="handle" id="handle" aria-label="ハンドルをまわす"><svg viewBox="0 0 56 56"><circle cx="28" cy="28" r="24.5" fill="#ffffff" stroke="#1d1a2f" stroke-width="3"/><rect x="26" y="22.5" width="24" height="11" rx="5.5" fill="#1d1a2f"/><circle cx="28" cy="28" r="5.5" fill="#ffffff" stroke="#1d1a2f" stroke-width="2.6"/><circle cx="43.5" cy="28" r="3" fill="#ffd23f"/></svg></button>
+      <button class="slothit" id="slotHit" aria-label="コインを入れる"></button>
+      <button class="retbtn" id="retBtn" aria-label="返却ボタン"></button>
+      <div class="coinlayer" id="coinLayer"></div>
     </div>
     <div class="card" id="card">
       <canvas id="sm" width="300" height="400"></canvas>
@@ -195,18 +240,21 @@ label.btn input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:
     </div>
     <div class="memo" id="memo">
       <span class="tape"></span>
+      <div class="coinbig" aria-hidden="true"><svg viewBox="0 0 48 48"><defs><radialGradient id="cgf" cx="0.38" cy="0.32" r="0.9"><stop offset="0" stop-color="#f4f7f9"/><stop offset=".6" stop-color="#ccd4db"/><stop offset="1" stop-color="#9aa7b1"/></radialGradient></defs><circle cx="24" cy="24" r="21" fill="url(#cgf)" stroke="#1d1a2f" stroke-width="2.5"/><circle cx="24" cy="24" r="16.5" fill="none" stroke="rgba(29,26,47,.35)" stroke-width="1.6"/><path d="M11 21a15 15 0 0 1 26 0z" fill="#ff5c8a" stroke="#1d1a2f" stroke-width="2"/><path d="M11 21h26" stroke="#1d1a2f" stroke-width="2"/><ellipse cx="17" cy="15" rx="4" ry="2.2" fill="rgba(255,255,255,.8)" transform="rotate(-24 17 15)"/></svg></div>
       <span class="mby" id="memoBy">しゅんやから</span>
       <textarea id="memoText" maxlength="60" rows="4" placeholder="例：朝いちばんのパン屋に並んでみたい" aria-label="やりたいことメモ"></textarea>
       <span class="mn" id="memoN">0/60</span>
     </div>
+    <div class="coinview" id="coinview"><svg viewBox="0 0 48 48"><defs><radialGradient id="cgb" cx="0.38" cy="0.32" r="0.9"><stop offset="0" stop-color="#f4f7f9"/><stop offset=".6" stop-color="#ccd4db"/><stop offset="1" stop-color="#9aa7b1"/></radialGradient></defs><circle cx="24" cy="24" r="21" fill="url(#cgb)" stroke="#1d1a2f" stroke-width="2.5"/><circle cx="24" cy="24" r="16.5" fill="none" stroke="rgba(29,26,47,.35)" stroke-width="1.6"/><circle cx="24" cy="24" r="12.5" fill="none" stroke="rgba(29,26,47,.18)" stroke-width="1.2"/></svg><span class="cvtext" id="cvText"></span></div>
     <button class="cap hide" id="cap" data-act="open" aria-label="カプセルをあける"><span class="top"></span><span class="bot"></span></button>
   </div>
 
   <div class="sheet">
     <div class="shelf" id="shelf"></div>
+    <div class="chips" id="chips"></div>
     <div class="copy" id="copy" aria-live="polite"></div>
     <div class="acts" id="acts"></div>
-    <p class="foot" id="foot">開けた動画は24時間で消えます。</p>
+    <p class="foot" id="foot"></p>
   </div>
   <div class="list" id="list">
     <div class="shade" data-act="closelist"></div>
@@ -261,6 +309,22 @@ window.__startGacha=function(){
           return sign(r.video_path).then(function(url){ return {id:r.id, by:r.by_slot, kind:'file', url:url, dur:r.dur, at:new Date(r.opened_at).getTime()}; });
         });
       },
+      spin:function(viewer,coinId){
+        return rpc('gacha_spin',{p_coin:coinId}).then(function(r){
+          if(!r) return null;
+          if(r.kind==='memo') return {id:r.id, by:r.by_slot, kind:'memo', text:r.text};
+          return sign(r.video_path).then(function(url){ return {id:r.id, by:r.by_slot, kind:'file', url:url, dur:r.dur, at:new Date(r.opened_at).getTime()}; });
+        });
+      },
+      myCoins:function(){ return rpc('gacha_my_coins').then(function(rows){ return (rows||[]).map(function(r){ return {id:r.id, text:r.txt, kind:r.kind, at:new Date(r.at).getTime()}; }); }); },
+      giveCoin:function(viewer,text){
+        return rpc('gacha_give_coin',{p_text:text}).then(function(id){
+          try{ var p=sb.functions.invoke('gacha-notify',{body:{type:'coin'}}); if(p&&p.catch) p.catch(function(){}); }catch(e){}
+          return {id:id};
+        });
+      },
+      rescue:function(){ return rpc('gacha_rescue'); },
+      counts:function(){ return rpc('gacha_counts').then(function(r){ return r||{mine:0,given:0,held:0}; }); },
       shelf:function(viewer){
         return rpc('gacha_shelf').then(function(rows){
           return Promise.all((rows||[]).map(function(r){ return sign(r.video_path).then(function(url){ return {id:r.id, by:r.by_slot, kind:'file', url:url, dur:r.dur, at:new Date(r.opened_at).getTime()}; }); }));
@@ -276,10 +340,10 @@ window.__startGacha=function(){
   })();
   /* ===== Store ここまで ===== */
 
-  var st={me:Store.me(),mode:'home',cur:null,replay:false,draft:null,note:'',warn:'',raf:0,t:0,paused:false,last:0,turn:0,q:0,spin:false};
+  var st={me:Store.me(),mode:'home',cur:null,replay:false,draft:null,note:'',warn:'',raf:0,t:0,paused:false,last:0,turn:0,q:0,spin:false,coins:[],given:0,mine:0,insertedId:null,cupCoinId:null};
   /* 画面が持っている写し。sync() で Store から取り直す */
   var box=[], shelf={shun:[],ari:[]}, wishes=[];
-  function sync(){ return Promise.all([Store.capsules(),Store.shelf(st.me),Store.wishes()]).then(function(r){ box=r[0]; shelf[st.me]=r[1]; wishes=r[2]; badge(); }); }
+  function sync(){ return Promise.all([Store.capsules(),Store.shelf(st.me),Store.wishes(),Store.myCoins(st.me),Store.counts(st.me)]).then(function(r){ box=r[0]; shelf[st.me]=r[1]; wishes=r[2]; st.coins=r[3]||[]; var ct=r[4]||{}; st.given=ct.given||0; st.mine=ct.mine||0; badge(); if(st.insertedId && !st.coins.some(function(c){ return String(c.id)===String(st.insertedId); })) st.insertedId=null; }); }
   function refresh(){ sync().then(function(){ if(st.mode==='home') home(true); }).catch(function(){}); }
   var calm=window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   function ms(n){return calm?Math.min(n,120):n;}
@@ -405,21 +469,21 @@ window.__startGacha=function(){
     var o=other(st.me);
     phone.setAttribute('data-me',st.me); phone.setAttribute('data-from',o);
     $('ava').textContent=P[st.me].ini; $('whose').textContent=P[st.me].name+'の画面';
-    card.className='card'; memo.className='memo'; capSet('hide');
+    card.className='card'; memo.className='memo'; coinviewEl.className='coinview'; capSet('hide');
+    cap.style.removeProperty('--lx'); cap.style.removeProperty('--ly'); cap.style.removeProperty('--lr');
     if(keepSim){ machine.className='machine'; resetHandle(); simMerge(); } else { machineShow(); }
-    var n=box.filter(function(c){ return c.by===o; }).length, m=box.length-n;
-    var line = st.warn ? '<p class="warn">'+st.warn+'</p>'
-      : '<p class="soft">'+(st.note || ((n?'ハンドルを指でぐるっと1周まわしてね。':(m?'':'先に自分のカプセルを入れておけます。'))+(m?(n?'<br>':'')+'自分のカプセルは '+m+' こ、'+P[o].name+'を待っています。':'')))+'</p>';
-    copy.innerHTML='<p class="k">'+dateLine()+'</p><h1>'+(n?'<em>'+P[o].name+'</em>のカプセルが '+n+' こ入ってる':'<em>'+P[o].name+'</em>のカプセルは、まだ入ってない')+'</h1>'+line;
+    var n=box.filter(function(c){ return c.by===o; }).length;
+    copy.innerHTML = st.warn ? '<p class="warn">'+st.warn+'</p>' : (st.note ? '<p class="soft">'+st.note+'</p>' : '');
     acts.innerHTML='<button class="btn" data-act="compose">カプセルを入れる</button>'+
+      '<button class="btn sub" data-act="praise">いいところを書く</button>'+
       (Store.demo?'<button class="btn sub" data-act="switch">'+P[o].name+'の画面に切り替える</button>':'')+
       (n?'<button class="btn plain" data-act="auto">うまく回せないときはここ</button>':'');
     st.note=''; st.warn='';
-    renderShelf();
+    renderShelf(); renderChips(); renderCoins(); renderCup(false);
   }
 
   function autoSpin(){
-    if(st.mode!=='home'||st.spin) return; st.spin=true;
+    if(st.mode!=='home'||st.spin) return; if(!coinGate()) return; st.spin=true;
     var from=st.turn, t0=performance.now();
     (function step(now){ var k=Math.min(1,(now-t0)/(calm?200:900)); st.turn=from+(360-from)*k; setRot(); if(k<1) requestAnimationFrame(step); else complete(); })(t0);
   }
@@ -427,19 +491,23 @@ window.__startGacha=function(){
     if(st.mode!=='home') return;
     var o=other(st.me);
     if(!tgt()){
+      if(st.insertedId){ st.insertedId=null; renderCoins(); }
       jig();
       var s=copy.querySelector('.soft,.warn'); if(s){ s.className='warn'; s.textContent='からっぽ。'+P[o].name+'のカプセルは、まだ入っていません。'; }
       setTimeout(function(){ if(st.mode==='home') resetHandle(); },220);
       return;
     }
-    st.mode='taking'; acts.innerHTML=''; shelfEl.innerHTML=''; jig();
-    Store.take(st.me).then(function(c){
-      if(!c){ st.warn='からっぽ。'+P[o].name+'のカプセルは、まだ入っていません。'; return sync().then(function(){ home(); }); }
+    st.mode='taking'; acts.innerHTML=''; shelfEl.innerHTML=''; chipsEl.innerHTML=''; jig();
+    var spentId=st.insertedId; st.insertedId=null; renderCoins();
+    Store.spin(st.me, spentId).then(function(c){
+      if(!c){ st.insertedId=spentId; renderCoins(); st.warn='からっぽ。'+P[o].name+'のカプセルは、まだ入っていません。'; return sync().then(function(){ home(); }); }
+      st.coins=st.coins.filter(function(x){ return String(x.id)!==String(spentId); });
       st.cur=c; st.mode='out';
       box=box.filter(function(x){ return x.id!==c.id; });
       if(c.kind!=='memo') shelf[st.me].unshift(c);
       sim.balls.forEach(function(b){ if(b.id===c.id){ b.exit=true; b.vy=260; } });
       setTimeout(function(){
+        cap.style.setProperty('--lx',(Math.round(Math.random()*28-14))+'px'); cap.style.setProperty('--ly',(Math.round(Math.random()*10-5))+'px'); cap.style.setProperty('--lr',(Math.round(Math.random()*32-16))+'deg');
         machine.classList.add('away'); capSet('drop');
         copy.innerHTML='<p class="k">ガチャッ</p><h1><em>'+P[o].name+'</em>のカプセルが出てきた</h1><p class="soft">何が入ってるかな。</p>';
         acts.innerHTML='<button class="btn" data-act="open">あける</button>';
@@ -558,13 +626,13 @@ window.__startGacha=function(){
     if(st.mode!=='home') return;
     var it=null; shelf[st.me].forEach(function(x){ if(String(x.id)===String(id)) it=x; });
     if(!it) return;
-    st.cur=it; st.replay=true; machine.classList.add('away'); shelfEl.innerHTML='';
+    st.cur=it; st.replay=true; machine.classList.add('away'); shelfEl.innerHTML=''; chipsEl.innerHTML='';
     startPlay();
   }
 
   /* カプセルを入れる */
   function compose(){
-    if(st.mode!=='home') return; st.mode='compose'; shelfEl.innerHTML='';
+    if(st.mode!=='home') return; st.mode='compose'; shelfEl.innerHTML=''; chipsEl.innerHTML='';
     copy.innerHTML='<p class="k">'+P[st.me].name+'のカプセル</p><h1>なにを入れる？</h1><p class="soft">'+P[other(st.me)].name+'が回して開けるまで、中身はひみつ。</p>';
     acts.innerHTML='<div class="row">'+pick('動画','sub')+'<button class="btn sub" data-act="write">やりたいことメモ</button></div>'+
       '<div class="row">'+(Store.demo?'<button class="btn plain" data-act="sample">見本の動画を入れる</button>':'<span></span>')+'<button class="btn plain" data-act="cancel">やめる</button></div>';
@@ -572,7 +640,7 @@ window.__startGacha=function(){
   function write(){
     if(st.mode!=='compose') return;
     st.mode='write'; phone.setAttribute('data-from',st.me); machine.classList.add('away');
-    var t=$('memoText'); t.readOnly=false; t.value=''; $('memoBy').textContent=P[st.me].name+'から'; $('memoN').textContent='0/60';
+    var t=$('memoText'); t.readOnly=false; t.value=''; t.placeholder='例：朝いちばんのパン屋に並んでみたい'; $('memoBy').textContent=P[st.me].name+'から'; $('memoN').textContent='0/60';
     memo.className='memo on';
     copy.innerHTML='<p class="k">メモのカプセル</p><h1>'+P[other(st.me)].name+'とやりたいこと</h1><p class="soft">開けてもらうと、二人のリストに並びます。</p>';
     acts.innerHTML='<button class="btn" data-act="send">ガチャ台に入れる</button><button class="btn plain" data-act="cancel">やめる</button>';
@@ -621,6 +689,10 @@ window.__startGacha=function(){
     else if(a==='toggle') toggle();
     else if(a==='done') done();
     else if(a==='keep') keep();
+    else if(a==='closeCoin'){ if(st.mode==='coinview'){ coinviewEl.className='coinview'; home(); } }
+    else if(a==='praise') praise();
+    else if(a==='praiseSend') praiseSend();
+    else if(a==='cancelPraise'){ if(st.mode==='praise'){ memo.className='memo'; home(); } }
     else if(a==='compose') compose();
     else if(a==='write') write();
     else if(a==='sample') send(true);
@@ -660,11 +732,131 @@ window.__startGacha=function(){
     probe.src=url;
   });
 
+  /* コイン：足元のコイン、投入、裏返し、返却口 */
+  var chipsEl=$('chips'), coinLayer=$('coinLayer'), slotHit=$('slotHit'), retBtn=$('retBtn'), cupCoin=$('cupCoin'), coinviewEl=$('coinview');
+  function coinFace(){
+    return '<svg viewBox="0 0 48 48"><defs><radialGradient id="cgf" cx="0.38" cy="0.32" r="0.9"><stop offset="0" stop-color="#f4f7f9"/><stop offset=".6" stop-color="#ccd4db"/><stop offset="1" stop-color="#9aa7b1"/></radialGradient></defs><circle cx="24" cy="24" r="21" fill="url(#cgf)" stroke="#1d1a2f" stroke-width="2.5"/><circle cx="24" cy="24" r="16.5" fill="none" stroke="rgba(29,26,47,.35)" stroke-width="1.6"/><path d="M11 21a15 15 0 0 1 26 0z" fill="#ff5c8a" stroke="#1d1a2f" stroke-width="2"/><path d="M11 21h26" stroke="#1d1a2f" stroke-width="2"/><ellipse cx="17" cy="15" rx="4" ry="2.2" fill="rgba(255,255,255,.8)" transform="rotate(-24 17 15)"/></svg>';
+  }
+  function coinBack(){
+    return '<svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="21" fill="url(#cgf)" stroke="#1d1a2f" stroke-width="2.5"/><circle cx="24" cy="24" r="16.5" fill="none" stroke="rgba(29,26,47,.35)" stroke-width="1.6"/><circle cx="24" cy="24" r="12.5" fill="none" stroke="rgba(29,26,47,.18)" stroke-width="1.2"/></svg>';
+  }
+  function sayWarn(msg){ var w=copy.querySelector('.warn'); if(!w){ copy.innerHTML='<p class="warn"></p>'; w=copy.querySelector('.warn'); } if(w) w.textContent=msg; }
+  function coinGate(){
+    if(st.insertedId) return true;
+    jig(); sayWarn('コインを入れてからまわしてね');
+    slotHit.classList.remove('pulse'); void slotHit.offsetWidth; slotHit.classList.add('pulse');
+    return false;
+  }
+  function renderChips(){
+    chipsEl.innerHTML='<span class="chip"><i class="ci capic"></i>'+st.mine+'</span><span class="chip"><i class="ci coinic"></i>'+st.given+'</span>';
+  }
+  function footCoin(){
+    for(var i=0;i<st.coins.length;i++){ var c=st.coins[i];
+      if(String(c.id)!==String(st.insertedId) && String(c.id)!==String(st.cupCoinId)) return c; }
+    return null;
+  }
+  function renderCoins(){
+    machine.classList.toggle('hascoin', !!st.insertedId);
+    machine.classList.toggle('ready', !!st.insertedId);
+    var rest=st.coins.filter(function(c){ return String(c.id)!==String(st.insertedId) && String(c.id)!==String(st.cupCoinId); });
+    var fc=footCoin(), h='';
+    if(rest.length>1) h+='<span class="stackcoin" aria-hidden="true">'+coinFace()+'</span>';
+    if(fc){
+      var t=fc.text||'';
+      var fs=t.length<=14?'8.5px':(t.length<=30?'7.5px':'6.5px');
+      h+='<button class="fcoin" id="footCoin" data-cid="'+esc(fc.id)+'" aria-label="コイン"><span class="flip"><span class="face front">'+coinFace()+'</span><span class="face back">'+coinBack()+'<span class="ctext" style="font-size:'+fs+'">'+esc(t)+'</span></span></span></button>';
+    }
+    coinLayer.innerHTML=h;
+  }
+  function renderCup(pop){ cupCoin.className='cupcoin'+(st.cupCoinId?' on':'')+(pop?' drop':''); }
+  function claimCup(){ if(!st.cupCoinId) return; st.cupCoinId=null; renderCup(false); renderCoins(); jig(); }
+  var cdrag=null;
+  coinLayer.addEventListener('pointerdown',function(e){
+    var fc=e.target.closest('.fcoin'); if(!fc||st.mode!=='home') return;
+    cdrag={fc:fc,x:e.clientX,y:e.clientY,moved:0,lr:coinLayer.getBoundingClientRect()};
+    try{ fc.setPointerCapture(e.pointerId); }catch(x){}
+    e.preventDefault();
+  });
+  coinLayer.addEventListener('pointermove',function(e){
+    if(!cdrag) return;
+    var dx=e.clientX-cdrag.x, dy=e.clientY-cdrag.y;
+    cdrag.moved=Math.max(cdrag.moved,Math.abs(dx)+Math.abs(dy));
+    if(cdrag.moved>8){ cdrag.fc.classList.add('drag'); cdrag.fc.style.left=(cdrag.lr.width*0.865+dx)+'px'; cdrag.fc.style.top=(cdrag.lr.height*0.925+dy)+'px'; }
+  });
+  function coinUp(){
+    if(!cdrag) return;
+    var fc=cdrag.fc, mv=cdrag.moved, lr=cdrag.lr; cdrag=null;
+    fc.classList.remove('drag');
+    if(mv<=8){
+      if(fc.classList.contains('flipped')){ var cn=footCoin(); if(cn&&cn.text) showCoin(cn.text); else fc.classList.remove('flipped'); }
+      else fc.classList.add('flipped');
+      return;
+    }
+    var r=fc.getBoundingClientRect(), cx=r.left+r.width/2-lr.left, cy=r.top+r.height/2-lr.top;
+    var sx=lr.width*0.70, sy=lr.height*0.528, d=Math.sqrt((cx-sx)*(cx-sx)+(cy-sy)*(cy-sy));
+    if(d<58) insertCoin(fc); else { fc.style.left=''; fc.style.top=''; }
+  }
+  coinLayer.addEventListener('pointerup',coinUp);
+  coinLayer.addEventListener('pointercancel',coinUp);
+  function insertCoin(fc){
+    if(st.insertedId){ sayWarn('コインはもう入ってる'); fc.style.left=''; fc.style.top=''; return; }
+    var coin=footCoin(); if(!coin) return;
+    var lr=coinLayer.getBoundingClientRect();
+    fc.classList.add('inserting');
+    fc.style.left=(lr.width*0.70)+'px'; fc.style.top=(lr.height*0.528)+'px';
+    setTimeout(function(){ st.insertedId=coin.id; renderCoins(); jig(); },330);
+  }
+  slotHit.addEventListener('click',function(){
+    if(st.mode!=='home') return;
+    if(st.insertedId){ st.insertedId=null; renderCoins(); return; }
+    var fc=$('footCoin');
+    if(fc) insertCoin(fc);
+    else { slotHit.classList.remove('pulse'); void slotHit.offsetWidth; slotHit.classList.add('pulse'); }
+  });
+  retBtn.addEventListener('click',function(){
+    if(st.mode!=='home') return;
+    if(st.cupCoinId){ claimCup(); return; }
+    if(footCoin()||st.insertedId){ jig(); return; }
+    Store.rescue(st.me).then(function(r){
+      if(r&&r.ok){ st.cupCoinId=r.id; sync().then(function(){ renderCoins(); renderCup(true); }); }
+      else jig();
+    }).catch(function(){ jig(); });
+  });
+  cupCoin.addEventListener('click',function(){ if(st.mode==='home'&&st.cupCoinId) claimCup(); });
+
+  function showCoin(t){
+    if(st.mode!=='home') return; st.mode='coinview'; chipsEl.innerHTML='';
+    $('cvText').textContent=t;
+    coinviewEl.className='coinview on'; machine.classList.add('away');
+    copy.innerHTML=''; acts.innerHTML='<button class="btn" data-act="closeCoin">とじる</button>';
+  }
+
+  /* いいところを書いてコインを渡す */
+  function praise(){
+    if(st.mode!=='home') return; st.mode='praise'; chipsEl.innerHTML='';
+    phone.setAttribute('data-from',st.me); machine.classList.add('away');
+    var t=$('memoText'); t.readOnly=false; t.value=''; t.placeholder='例：笑った顔が好き';
+    $('memoBy').textContent=P[other(st.me)].name+'のいいところ'; $('memoN').textContent='0/60';
+    memo.className='memo on praise';
+    copy.innerHTML='';
+    acts.innerHTML='<button class="btn" data-act="praiseSend">コインを渡す</button><button class="btn plain" data-act="cancelPraise">やめる</button>';
+  }
+  function praiseSend(){
+    if(st.mode!=='praise') return;
+    var t=$('memoText').value.replace(/\s+/g,' ').trim();
+    if(!t){ memo.classList.remove('nudge'); void memo.offsetWidth; memo.classList.add('nudge'); return; }
+    st.mode='sending'; acts.innerHTML=''; memo.className='memo';
+    Store.giveCoin(st.me,t).then(function(){
+      st.given++; st.note='コインを渡しました。'; home();
+    }).catch(function(){ st.warn='渡せませんでした。もう一度ためしてください。'; home(); });
+  }
+
   /* ハンドルを指でまわす（右回りだけ） */
   var drag=null;
   function ang(e){ return Math.atan2(e.clientY-drag.cy,e.clientX-drag.cx)*180/Math.PI; }
   handle.addEventListener('pointerdown',function(e){
     if(st.mode!=='home'||st.spin) return;
+    if(!coinGate()) return;
     try{ handle.setPointerCapture(e.pointerId); }catch(x){}
     var r=handle.getBoundingClientRect(); drag={cx:r.left+r.width/2,cy:r.top+r.height/2,moved:0}; drag.a=ang(e); e.preventDefault();
   });
@@ -707,7 +899,7 @@ window.__startGacha=function(){
     return navigator.serviceWorker.ready.then(function(reg){ return reg.pushManager.getSubscription().then(function(sub){ if(sub) return sub; return reg.pushManager.subscribe({userVisibleOnly:true, applicationServerKey:urlB64ToUint8(CFG.VAPID_PUBLIC_KEY)}); }); }).then(function(sub){ return saveSub(sub); }).then(function(){ return true; }).catch(function(){ return false; }); }
   function refreshPushBtn(){ var b=document.getElementById('pushBtn'); if(!b) return; if(!('PushManager' in window)){ b.textContent='通知はこの端末では使えません'; return; } b.textContent=(window.Notification&&Notification.permission==='granted')?'通知オン':'通知をオンにする'; }
   function setupFoot(){ var foot=document.getElementById('foot'); if(!foot) return;
-    foot.innerHTML='開けた動画は24時間で消えます。<br><button class="footbtn" id="pushBtn" type="button">通知をオンにする</button> · <button class="footbtn" id="logoutBtn" type="button">ログアウト</button>';
+    foot.innerHTML='<button class="footbtn" id="pushBtn" type="button">通知をオンにする</button> · <button class="footbtn" id="logoutBtn" type="button">ログアウト</button>';
     document.getElementById('pushBtn').addEventListener('click',function(){ if(window.Notification&&Notification.permission==='granted'){ subscribePush().then(refreshPushBtn); return; } if(window.Notification){ Notification.requestPermission().then(function(p){ if(p==='granted') subscribePush().then(refreshPushBtn); refreshPushBtn(); }); } });
     document.getElementById('logoutBtn').addEventListener('click',function(){ sb.auth.signOut().then(function(){ location.reload(); }); });
     refreshPushBtn();
