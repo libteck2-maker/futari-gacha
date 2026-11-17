@@ -777,6 +777,7 @@ window.__startGacha=function(){
     return null;
   }
   function renderCoins(){
+    coinLayer.querySelectorAll('.rcoin').forEach(function(n){ n.remove(); });
     machine.classList.toggle('hascoin', !!st.insertedId);
     machine.classList.toggle('ready', !!st.insertedId);
     var rest=st.coins.filter(function(c){ return String(c.id)!==String(st.insertedId) && String(c.id)!==String(st.cupCoinId); });
@@ -824,7 +825,7 @@ window.__startGacha=function(){
     var lr=coinLayer.getBoundingClientRect();
     el.classList.add('inserting');
     el.style.left=(lr.width*0.70)+'px'; el.style.top=(lr.height*0.528)+'px';
-    setTimeout(function(){ st.insertedId=coin.id; renderCoins(); jig(); },330);
+    setTimeout(function(){ el.remove(); st.insertedId=coin.id; renderCoins(); jig(); },330);
   }
   slotHit.addEventListener('click',function(){
     if(st.mode!=='home') return;
