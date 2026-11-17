@@ -153,11 +153,12 @@ body{margin:0;color:var(--ink);font-family:var(--body);font-weight:500;font-size
 h2{font-family:var(--display);font-weight:400;font-size:20px;margin:0}
 .x{font:inherit;font-size:22px;line-height:1;width:38px;height:38px;border-radius:50%;border:3px solid var(--ink);background:#fff;cursor:pointer;color:var(--ink)}
 #wl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
-#wl li{display:grid;grid-template-columns:34px 1fr auto;gap:12px;align-items:center;border:3px solid var(--ink);border-radius:14px;padding:10px 12px;background:#fff}
+#wl li{display:grid;grid-template-columns:34px 1fr auto auto;gap:12px;align-items:center;border:3px solid var(--ink);border-radius:14px;padding:10px 12px;background:#fff}
 #wl li.none{display:block;border-style:dashed;color:var(--muted);font-size:14px}
 #wl b{display:block;font-size:16px;line-height:1.45}
 #wl small{font-size:12px;color:var(--muted)}
 .tick{width:34px;height:34px;border-radius:50%;border:3px solid var(--ink);background:#fff;cursor:pointer;padding:0;position:relative}
+.wback{font:inherit;font-size:11.5px;font-weight:700;color:var(--muted);background:#fff;border:2px solid var(--ink);border-radius:999px;padding:5px 9px;cursor:pointer;white-space:nowrap;flex:none}
 #wl li.done .tick{background:#34c38f}
 #wl li.done .tick::after{content:"";position:absolute;left:10px;top:4px;width:8px;height:14px;border:solid var(--ink);border-width:0 3.5px 3.5px 0;transform:rotate(40deg)}
 #wl li.done b{text-decoration:line-through;color:var(--muted)}
@@ -222,11 +223,11 @@ label.btn input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:
     <div class="machine has" id="machine">
       <div class="glass" id="glass"><canvas id="gl"></canvas>
       </div>
-      <div class="mcard" aria-hidden="true"><span class="emblem"><svg viewBox="0 0 48 48"><path d="M9 22a16 16 0 0 1 30 0z" fill="#ff5c8a" stroke="#1d1a2f" stroke-width="2.4"/><path d="M9 22a16 16 0 0 0 30 0z" fill="#fffdf5" stroke="#1d1a2f" stroke-width="2.4"/><ellipse cx="17" cy="14.5" rx="4" ry="2.1" fill="rgba(255,255,255,.85)" transform="rotate(-24 17 14.5)"/></svg></span><span class="logo">ガッチャ</span></div>
+      <div class="mcard" aria-hidden="true"><span class="emblem"><svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="16" fill="#fffdf5"/><path d="M8 24a16 16 0 0 1 32 0z" fill="#ff5c8a"/><circle cx="24" cy="24" r="16" fill="none" stroke="#1d1a2f" stroke-width="2.4"/><path d="M8 24h32" stroke="#1d1a2f" stroke-width="2.4"/><ellipse cx="17.5" cy="15" rx="4.2" ry="2.2" fill="rgba(255,255,255,.85)" transform="rotate(-24 17.5 15)"/></svg></span><span class="logo">ガッチャ</span></div>
       <div class="mbody">
         <svg class="bodysvg" viewBox="0 0 340 285" aria-hidden="true"><defs><linearGradient id="silv" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eef2f5"/><stop offset=".5" stop-color="#c3ccd4"/><stop offset="1" stop-color="#98a4ae"/></linearGradient></defs><rect x="74" y="20" width="192" height="148" rx="14" fill="#ffffff" stroke="#d7dde5" stroke-width="2"/><rect x="80" y="31" width="42" height="60" rx="7" fill="#2f7bff"/><text x="101" y="57" text-anchor="middle" font-size="9.5" font-weight="700" fill="#ffffff">COIN</text><text x="101" y="77" text-anchor="middle" font-size="11" font-weight="700" fill="#ffffff">1まい</text><circle cx="150" cy="103" r="41" fill="#ffffff" stroke="#1d1a2f" stroke-width="3.5"/><path d="M150 62 A41 41 0 0 1 191 103" fill="none" stroke="#f5b301" stroke-width="7"/><path d="M109 103 A41 41 0 0 0 150 144" fill="none" stroke="#2f7bff" stroke-width="7"/><circle cx="238" cy="49" r="21" fill="url(#silv)" stroke="#1d1a2f" stroke-width="3"/><rect x="235.5" y="33" width="5" height="32" rx="2.5" fill="#1d1a2f"/><rect x="73" y="167" width="98" height="74" rx="10" fill="#8a5a33"/><rect x="73" y="167" width="98" height="16" rx="8" fill="rgba(0,0,0,.28)"/><ellipse cx="122" cy="216" rx="34" ry="9" fill="rgba(0,0,0,.22)"/><path d="M202 179 h70 v47 a10 10 0 0 1 -10 10 h-50 a10 10 0 0 1 -10 -10 z" fill="#dfe5ea" stroke="#c3ccd4" stroke-width="2"/><rect x="202" y="173" width="70" height="9" rx="4.5" fill="#eef2f5" stroke="#c3ccd4" stroke-width="2"/><rect x="210" y="222" width="54" height="6" rx="3" fill="#ffffff"/><circle cx="18" cy="18" r="3.4" fill="#c3ccd4"/><circle cx="322" cy="18" r="3.4" fill="#c3ccd4"/><circle cx="18" cy="267" r="3.4" fill="#c3ccd4"/><circle cx="322" cy="267" r="3.4" fill="#c3ccd4"/></svg>
         <span class="slotcoin" id="slotCoin"></span>
-        <button class="cupcoin" id="cupCoin" aria-label="返却口のコイン"><svg viewBox="0 0 48 48"><defs><radialGradient id="cgf" cx="0.38" cy="0.32" r="0.9"><stop offset="0" stop-color="#f4f7f9"/><stop offset=".6" stop-color="#ccd4db"/><stop offset="1" stop-color="#9aa7b1"/></radialGradient></defs><circle cx="24" cy="24" r="21" fill="url(#cgf)" stroke="#1d1a2f" stroke-width="2.5"/><circle cx="24" cy="24" r="16.5" fill="none" stroke="rgba(29,26,47,.35)" stroke-width="1.6"/><path d="M11 21a15 15 0 0 1 26 0z" fill="#ff5c8a" stroke="#1d1a2f" stroke-width="2"/><path d="M11 21h26" stroke="#1d1a2f" stroke-width="2"/><ellipse cx="17" cy="15" rx="4" ry="2.2" fill="rgba(255,255,255,.8)" transform="rotate(-24 17 15)"/></svg></button>
+        <button class="cupcoin" id="cupCoin" aria-label="返却口のコイン"><svg viewBox="0 0 48 48"><defs><radialGradient id="cgf" cx="0.38" cy="0.32" r="0.9"><stop offset="0" stop-color="#f4f7f9"/><stop offset=".6" stop-color="#ccd4db"/><stop offset="1" stop-color="#9aa7b1"/></radialGradient></defs><circle cx="24" cy="24" r="21" fill="url(#cgf)" stroke="#1d1a2f" stroke-width="2.5"/><circle cx="24" cy="24" r="16.5" fill="none" stroke="rgba(29,26,47,.35)" stroke-width="1.6"/><circle cx="24" cy="24" r="12" fill="#fffdf5"/><path d="M12 24a12 12 0 0 1 24 0z" fill="#ff5c8a"/><circle cx="24" cy="24" r="12" fill="none" stroke="#1d1a2f" stroke-width="2"/><path d="M12 24h24" stroke="#1d1a2f" stroke-width="2"/><ellipse cx="19" cy="17.5" rx="3.2" ry="1.7" fill="rgba(255,255,255,.85)" transform="rotate(-24 19 17.5)"/></svg></button>
       </div>
       <button class="handle" id="handle" aria-label="ハンドルをまわす"><svg viewBox="0 0 56 56"><circle cx="28" cy="28" r="24.5" fill="#ffffff" stroke="#1d1a2f" stroke-width="3"/><rect x="26" y="22.5" width="24" height="11" rx="5.5" fill="#1d1a2f"/><circle cx="28" cy="28" r="5.5" fill="#ffffff" stroke="#1d1a2f" stroke-width="2.6"/><circle cx="43.5" cy="28" r="3" fill="#ffd23f"/></svg></button>
       <button class="slothit" id="slotHit" aria-label="コインを入れる"></button>
@@ -240,7 +241,7 @@ label.btn input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:
     </div>
     <div class="memo" id="memo">
       <span class="tape"></span>
-      <div class="coinbig" aria-hidden="true"><svg viewBox="0 0 48 48"><defs><radialGradient id="cgf" cx="0.38" cy="0.32" r="0.9"><stop offset="0" stop-color="#f4f7f9"/><stop offset=".6" stop-color="#ccd4db"/><stop offset="1" stop-color="#9aa7b1"/></radialGradient></defs><circle cx="24" cy="24" r="21" fill="url(#cgf)" stroke="#1d1a2f" stroke-width="2.5"/><circle cx="24" cy="24" r="16.5" fill="none" stroke="rgba(29,26,47,.35)" stroke-width="1.6"/><path d="M11 21a15 15 0 0 1 26 0z" fill="#ff5c8a" stroke="#1d1a2f" stroke-width="2"/><path d="M11 21h26" stroke="#1d1a2f" stroke-width="2"/><ellipse cx="17" cy="15" rx="4" ry="2.2" fill="rgba(255,255,255,.8)" transform="rotate(-24 17 15)"/></svg></div>
+      <div class="coinbig" aria-hidden="true"><svg viewBox="0 0 48 48"><defs><radialGradient id="cgf" cx="0.38" cy="0.32" r="0.9"><stop offset="0" stop-color="#f4f7f9"/><stop offset=".6" stop-color="#ccd4db"/><stop offset="1" stop-color="#9aa7b1"/></radialGradient></defs><circle cx="24" cy="24" r="21" fill="url(#cgf)" stroke="#1d1a2f" stroke-width="2.5"/><circle cx="24" cy="24" r="16.5" fill="none" stroke="rgba(29,26,47,.35)" stroke-width="1.6"/><circle cx="24" cy="24" r="12" fill="#fffdf5"/><path d="M12 24a12 12 0 0 1 24 0z" fill="#ff5c8a"/><circle cx="24" cy="24" r="12" fill="none" stroke="#1d1a2f" stroke-width="2"/><path d="M12 24h24" stroke="#1d1a2f" stroke-width="2"/><ellipse cx="19" cy="17.5" rx="3.2" ry="1.7" fill="rgba(255,255,255,.85)" transform="rotate(-24 19 17.5)"/></svg></div>
       <span class="mby" id="memoBy">しゅんやから</span>
       <textarea id="memoText" maxlength="60" rows="4" placeholder="例：朝いちばんのパン屋に並んでみたい" aria-label="やりたいことメモ"></textarea>
       <span class="mn" id="memoN">0/60</span>
@@ -334,6 +335,7 @@ window.__startGacha=function(){
       toggleWish:function(id){ return rpc('gacha_toggle_wish',{p_id:id}); },
       deleteWish:function(id){ return rpc('gacha_delete_wish',{p_id:id}); },
       moveWish:function(id,dir){ return rpc('gacha_move_wish',{p_id:id,p_dir:dir}); },
+      recapsule:function(viewer,id){ return rpc('gacha_recapsule',{p_wish_id:id}).then(function(cid){ if(cid) notifyPartner(); return cid; }); },
       fastForward:function(){ return Promise.resolve(); },
       onChange:function(cb){}
     };
@@ -360,7 +362,7 @@ window.__startGacha=function(){
   function badge(){ $('cnt').textContent=wishes.filter(function(w){ return !w.done; }).length; }
   function renderList(){
     $('wl').innerHTML = wishes.length ? wishes.map(function(w,i){
-      return '<li class="'+(w.done?'done':'')+'"><button class="tick" data-act="tick" data-id="'+esc(w.id)+'" aria-label="'+(w.done?'やった、を取り消す':'やった、にする')+'"></button><span><b>'+esc(w.t)+'</b><small>'+(P[w.by]?P[w.by].name:'')+'のメモ</small></span><span class="wctl"><button data-act="up" data-id="'+esc(w.id)+'" aria-label="上へ">↑</button><button data-act="down" data-id="'+esc(w.id)+'" aria-label="下へ">↓</button><button data-act="delwish" data-id="'+esc(w.id)+'" aria-label="消す">×</button></span></li>';
+      return '<li class="'+(w.done?'done':'')+'"><button class="tick" data-act="tick" data-id="'+esc(w.id)+'" aria-label="'+(w.done?'やった、を取り消す':'やった、にする')+'"></button><span><b>'+esc(w.t)+'</b><small>'+(P[w.by]?P[w.by].name:'')+'のメモ</small></span><button class="wback" data-act="recap" data-id="'+esc(w.id)+'">カプセルに戻す</button><span class="wctl"><button data-act="up" data-id="'+esc(w.id)+'" aria-label="上へ">↑</button><button data-act="down" data-id="'+esc(w.id)+'" aria-label="下へ">↓</button><button data-act="delwish" data-id="'+esc(w.id)+'" aria-label="消す">×</button></span></li>';
     }).join('') : '<li class="none">まだありません。メモのカプセルを開けると、ここに並びます。</li>';
   }
 
@@ -429,8 +431,8 @@ window.__startGacha=function(){
     g.fillStyle='rgba(29,26,47,.85)'; g.beginPath(); g.ellipse(W/2,H+2,W*0.15,9,0,0,6.283); g.fill();
     for(var i=0;i<sim.balls.length;i++){
       var b=sim.balls[i]; g.save(); g.translate(b.x,b.y); g.rotate(b.a);
-      g.fillStyle=b.c; g.beginPath(); g.arc(0,0,b.r,Math.PI,0); g.closePath(); g.fill();
-      g.fillStyle=b.deco?b.c:'#fffdf5'; g.beginPath(); g.arc(0,0,b.r,0,Math.PI); g.closePath(); g.fill();
+      g.fillStyle=b.deco?'rgba(255,255,255,.5)':b.c; g.beginPath(); g.arc(0,0,b.r,Math.PI,0); g.closePath(); g.fill();
+      g.fillStyle=b.deco?'rgba(255,253,245,.92)':'#fffdf5'; g.beginPath(); g.arc(0,0,b.r,0,Math.PI); g.closePath(); g.fill();
       g.lineWidth=b.deco?2:3; g.strokeStyle=b.deco?'rgba(29,26,47,.45)':'#1d1a2f'; g.beginPath(); g.arc(0,0,b.r,0,6.283); g.stroke();
       g.beginPath(); g.moveTo(-b.r,0); g.lineTo(b.r,0); g.stroke();
       g.fillStyle='rgba(255,255,255,.7)'; g.beginPath(); g.ellipse(-b.r*0.42,-b.r*0.5,b.r*0.26,b.r*0.13,-0.5,0,6.283); g.fill();
@@ -483,13 +485,19 @@ window.__startGacha=function(){
   }
 
   function autoSpin(){
-    if(st.mode!=='home'||st.spin) return; if(!coinGate()) return; st.spin=true;
+    if(st.mode!=='home'||st.spin) return; st.spin=true;
     var from=st.turn, t0=performance.now();
     (function step(now){ var k=Math.min(1,(now-t0)/(calm?200:900)); st.turn=from+(360-from)*k; setRot(); if(k<1) requestAnimationFrame(step); else complete(); })(t0);
   }
   function complete(){
     if(st.mode!=='home') return;
     var o=other(st.me);
+    if(!st.insertedId){
+      jig();
+      slotHit.classList.remove('pulse'); void slotHit.offsetWidth; slotHit.classList.add('pulse');
+      setTimeout(function(){ if(st.mode==='home') resetHandle(); },220);
+      return;
+    }
     if(!tgt()){
       if(st.insertedId){ st.insertedId=null; renderCoins(); }
       jig();
@@ -704,6 +712,7 @@ window.__startGacha=function(){
       var s=copy.querySelector('.soft,.warn'); if(s){ s.className='soft'; s.textContent='24時間たって、あけた動画が消えました。'; } renderShelf(); }); } }
     else if(a==='list'){ renderList(); $('list').classList.add('on'); }
     else if(a==='closelist'){ $('list').classList.remove('on'); }
+    else if(a==='recap'){ Store.recapsule(st.me,b.getAttribute('data-id')).then(sync).then(function(){ $('list').classList.remove('on'); home(); }); }
     else if(a==='tick'){ Store.toggleWish(b.getAttribute('data-id')).then(sync).then(renderList); }
     else if(a==='up'){ Store.moveWish(b.getAttribute('data-id'),-1).then(sync).then(renderList); }
     else if(a==='down'){ Store.moveWish(b.getAttribute('data-id'),1).then(sync).then(renderList); }
@@ -735,18 +744,12 @@ window.__startGacha=function(){
   /* コイン：足元のコイン、投入、裏返し、返却口 */
   var chipsEl=$('chips'), coinLayer=$('coinLayer'), slotHit=$('slotHit'), retBtn=$('retBtn'), cupCoin=$('cupCoin'), coinviewEl=$('coinview');
   function coinFace(){
-    return '<svg viewBox="0 0 48 48"><defs><radialGradient id="cgf" cx="0.38" cy="0.32" r="0.9"><stop offset="0" stop-color="#f4f7f9"/><stop offset=".6" stop-color="#ccd4db"/><stop offset="1" stop-color="#9aa7b1"/></radialGradient></defs><circle cx="24" cy="24" r="21" fill="url(#cgf)" stroke="#1d1a2f" stroke-width="2.5"/><circle cx="24" cy="24" r="16.5" fill="none" stroke="rgba(29,26,47,.35)" stroke-width="1.6"/><path d="M11 21a15 15 0 0 1 26 0z" fill="#ff5c8a" stroke="#1d1a2f" stroke-width="2"/><path d="M11 21h26" stroke="#1d1a2f" stroke-width="2"/><ellipse cx="17" cy="15" rx="4" ry="2.2" fill="rgba(255,255,255,.8)" transform="rotate(-24 17 15)"/></svg>';
+    return '<svg viewBox="0 0 48 48"><defs><radialGradient id="cgf" cx="0.38" cy="0.32" r="0.9"><stop offset="0" stop-color="#f4f7f9"/><stop offset=".6" stop-color="#ccd4db"/><stop offset="1" stop-color="#9aa7b1"/></radialGradient></defs><circle cx="24" cy="24" r="21" fill="url(#cgf)" stroke="#1d1a2f" stroke-width="2.5"/><circle cx="24" cy="24" r="16.5" fill="none" stroke="rgba(29,26,47,.35)" stroke-width="1.6"/><circle cx="24" cy="24" r="12" fill="#fffdf5"/><path d="M12 24a12 12 0 0 1 24 0z" fill="#ff5c8a"/><circle cx="24" cy="24" r="12" fill="none" stroke="#1d1a2f" stroke-width="2"/><path d="M12 24h24" stroke="#1d1a2f" stroke-width="2"/><ellipse cx="19" cy="17.5" rx="3.2" ry="1.7" fill="rgba(255,255,255,.85)" transform="rotate(-24 19 17.5)"/></svg>';
   }
   function coinBack(){
     return '<svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="21" fill="url(#cgf)" stroke="#1d1a2f" stroke-width="2.5"/><circle cx="24" cy="24" r="16.5" fill="none" stroke="rgba(29,26,47,.35)" stroke-width="1.6"/><circle cx="24" cy="24" r="12.5" fill="none" stroke="rgba(29,26,47,.18)" stroke-width="1.2"/></svg>';
   }
   function sayWarn(msg){ var w=copy.querySelector('.warn'); if(!w){ copy.innerHTML='<p class="warn"></p>'; w=copy.querySelector('.warn'); } if(w) w.textContent=msg; }
-  function coinGate(){
-    if(st.insertedId) return true;
-    jig(); sayWarn('コインを入れてからまわしてね');
-    slotHit.classList.remove('pulse'); void slotHit.offsetWidth; slotHit.classList.add('pulse');
-    return false;
-  }
   function renderChips(){
     chipsEl.innerHTML='<span class="chip"><i class="ci capic"></i>'+st.mine+'</span><span class="chip"><i class="ci coinic"></i>'+st.given+'</span>';
   }
@@ -856,7 +859,6 @@ window.__startGacha=function(){
   function ang(e){ return Math.atan2(e.clientY-drag.cy,e.clientX-drag.cx)*180/Math.PI; }
   handle.addEventListener('pointerdown',function(e){
     if(st.mode!=='home'||st.spin) return;
-    if(!coinGate()) return;
     try{ handle.setPointerCapture(e.pointerId); }catch(x){}
     var r=handle.getBoundingClientRect(); drag={cx:r.left+r.width/2,cy:r.top+r.height/2,moved:0}; drag.a=ang(e); e.preventDefault();
   });
