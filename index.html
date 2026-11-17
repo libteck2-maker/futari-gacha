@@ -290,7 +290,7 @@ window.__startGacha=function(){
     return {
       demo:false,
       me:function(){ return slot; },
-      capsules:function(){ return rpc('gacha_capsules').then(function(rows){ return (rows||[]).map(function(r){ return {id:r.id, by:r.by_slot}; }); }); },
+      capsules:function(){ return rpc('gacha_capsules').then(function(rows){ return (rows||[]).map(function(r){ return {id:r.id, by:r.by_slot, kind:r.kind}; }); }); },
       add:function(by,c){
         if(c.kind==='memo'){ return rpc('gacha_add_memo',{p_text:c.text}).then(function(id){ notifyPartner(); return {id:id, by:slot}; }); }
         if(c.kind==='file'){
@@ -368,13 +368,13 @@ window.__startGacha=function(){
 
   /* ガチャ台の中の球 */
   var sim={balls:[],W:0,H:0,prev:0,last:0,pull:0,d:1};
-  function tgt(){ var o=other(st.me); for(var i=0;i<box.length;i++){ if(box[i].by===o) return box[i].id; } return 0; }
+  function tgt(){ var o=other(st.me), fb=0; for(var i=0;i<box.length;i++){ if(box[i].by===o){ if(box[i].kind!=='memo') return box[i].id; if(!fb) fb=box[i].id; } } return fb; }
   function simFlags(){ var t=tgt(); sim.balls.forEach(function(b){ b.star=!!b.id && b.id===t; }); }
   function simSize(){ var d=Math.min(window.devicePixelRatio||1,2); sim.W=glass.clientWidth; sim.H=glass.clientHeight; gl.width=Math.round(sim.W*d); gl.height=Math.round(sim.H*d); sim.d=d; }
   function simSync(){
     simSize(); sim.balls=[]; var W=sim.W,H=sim.H,r=W*0.08,i;
     for(i=0;i<4;i++) sim.balls.push({x:r+6+i*((W-2*r-12)/3),y:H-r,vx:0,vy:0,a:i*1.7,r:r,c:'rgba(255,255,255,.6)',deco:true});
-    box.slice(0,9).forEach(function(c,k){ sim.balls.push({id:c.id,x:W*0.2+((k*0.37)%1)*W*0.6,y:H*0.45-k*6,vx:0,vy:0,a:k,r:W*0.105,c:P[c.by].col}); });
+    box.slice(0,9).forEach(function(c,k){ sim.balls.push({id:c.id,x:W*0.2+((k*0.37)%1)*W*0.6,y:H*0.45-k*6,vx:0,vy:0,a:k,r:(c.kind!=='memo'?W*0.12:W*0.105),vid:c.kind!=='memo',c:P[c.by].col}); });
     simFlags(); for(i=0;i<150;i++) simStep(1/60,0,0);
   }
   function simMerge(){
@@ -384,7 +384,7 @@ window.__startGacha=function(){
     box.forEach(function(c){ if(!have[c.id]) addBall(c); });
     simFlags();
   }
-  function addBall(c){ sim.balls.push({id:c.id,x:sim.W/2+6,y:-34,vx:20,vy:420,a:0,r:sim.W*0.105,c:P[c.by].col}); simFlags(); }
+  function addBall(c){ sim.balls.push({id:c.id,x:sim.W/2+6,y:-34,vx:20,vy:420,a:0,r:(c.kind!=='memo'?sim.W*0.12:sim.W*0.105),vid:c.kind!=='memo',c:P[c.by].col}); simFlags(); }
   function simStep(dt,om,pull){
     var W=sim.W,H=sim.H,B=sim.balls,i,j,b; sim.pull=pull;
     for(i=0;i<B.length;i++){
@@ -431,6 +431,7 @@ window.__startGacha=function(){
     g.fillStyle='rgba(29,26,47,.85)'; g.beginPath(); g.ellipse(W/2,H+2,W*0.15,9,0,0,6.283); g.fill();
     for(var i=0;i<sim.balls.length;i++){
       var b=sim.balls[i]; g.save(); g.translate(b.x,b.y); g.rotate(b.a);
+      if(b.vid){ var pu=.30+.09*Math.sin(performance.now()/560); g.fillStyle='rgba(255,205,66,'+pu.toFixed(3)+')'; g.beginPath(); g.arc(0,0,b.r*1.32,0,6.283); g.fill(); }
       g.fillStyle=b.deco?'rgba(255,255,255,.5)':b.c; g.beginPath(); g.arc(0,0,b.r,Math.PI,0); g.closePath(); g.fill();
       g.fillStyle=b.deco?'rgba(255,253,245,.92)':'#fffdf5'; g.beginPath(); g.arc(0,0,b.r,0,Math.PI); g.closePath(); g.fill();
       g.lineWidth=b.deco?2:3; g.strokeStyle=b.deco?'rgba(29,26,47,.45)':'#1d1a2f'; g.beginPath(); g.arc(0,0,b.r,0,6.283); g.stroke();
