@@ -6,7 +6,7 @@
 <title>1分動画ガチャ</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Dela+Gothic+One&family=Yusei+Magic&family=Zen+Maru+Gothic:wght@500;700&display=swap" rel="stylesheet">
 <style>
 /* layout: a candy-shop gacha counter. The capsule and the video share the yellow stage on top; one white sheet at the bottom holds the words and the buttons */
 :root{
@@ -55,7 +55,7 @@ body{margin:0;color:var(--ink);font-family:var(--body);font-weight:500;font-size
 @keyframes roll{to{transform:translateX(110vw) rotate(560deg)}}
 
 .machine{width:min(74vw,258px);position:relative;transition:transform .45s cubic-bezier(.4,0,.2,1),opacity .3s}
-.machine.away{opacity:0;transform:translateY(-22px) scale(.86);pointer-events:none}
+.machine.away{opacity:0;pointer-events:none}
 .machine.jig{animation:jig .32s}
 @keyframes jig{25%{transform:translateX(-5px) rotate(-1.5deg)}50%{transform:translateX(5px) rotate(1.5deg)}75%{transform:translateX(-3px)}}
 .glass{aspect-ratio:340/215;border:4px solid var(--ink);border-bottom:0;border-radius:30px 30px 0 0;background:#dceef5;position:relative;overflow:hidden}
@@ -85,6 +85,15 @@ body{margin:0;color:var(--ink);font-family:var(--body);font-weight:500;font-size
 .cupcoin.drop{animation:cupd .5s cubic-bezier(.2,.9,.3,1)}
 @keyframes cupd{from{transform:translateY(-44px)}60%{transform:translateY(3px)}to{transform:none}}
 .coinlayer{position:absolute;inset:0;pointer-events:none;z-index:4}
+.roll{position:absolute;right:-54px;top:25%;width:47px;z-index:8}
+.rcap{height:15px;background:#e8443a;border:3px solid #1d1a2f;border-radius:8px;margin:0 1px;position:relative;z-index:2}
+.rbody{background:#fdfdff;border:3px solid #1d1a2f;border-radius:22px;margin-top:-8px;padding:12px 0 7px;box-shadow:2px 3px 0 rgba(29,26,47,.18)}
+.rwin{margin:0 6px;background:linear-gradient(180deg,#dceef5,#c3dde9);border:2.5px solid #1d1a2f;border-radius:14px;height:172px;display:flex;flex-direction:column-reverse;align-items:center;justify-content:flex-start;gap:2px;padding:4px 0;overflow:hidden;box-shadow:inset 0 2px 5px rgba(29,26,47,.15)}
+.rcoin{width:31px;height:31px;flex:0 0 auto;border:none;background:none;padding:0;border-radius:50%;cursor:pointer;touch-action:none;pointer-events:auto;-webkit-tap-highlight-color:transparent}
+.rcoin svg{width:100%;height:100%;display:block;pointer-events:none}
+.rcoin.drag{position:absolute;width:54px;height:54px;z-index:30;transform:translate(-50%,-50%);transition:none}
+.rcoin.inserting{transition:left .3s,top .3s,opacity .3s,scale .3s;scale:.25;opacity:.15;z-index:30}
+.rbase{height:9px;background:#fdfdff;border:3px solid #1d1a2f;border-radius:6px;margin:-4px 3px 0;position:relative;z-index:2}
 .stackcoin{position:absolute;left:84.4%;top:91%;width:13.5%;aspect-ratio:1;translate:-50% -50%;opacity:.85}
 .stackcoin svg{width:100%;height:100%;display:block}
 .fcoin{position:absolute;left:86.5%;top:92.5%;width:14.5%;aspect-ratio:1;translate:-50% -50%;background:none;border:0;padding:0;cursor:pointer;pointer-events:auto;-webkit-tap-highlight-color:transparent;perspective:320px}
@@ -107,7 +116,12 @@ body{margin:0;color:var(--ink);font-family:var(--body);font-weight:500;font-size
 .coinview{width:min(62vw,230px);aspect-ratio:1;position:relative;transform:scale(0) rotate(8deg);opacity:0;pointer-events:none;transition:transform .45s cubic-bezier(.25,1.5,.45,1),opacity .2s}
 .coinview.on{transform:none;opacity:1;pointer-events:auto}
 .coinview svg{width:100%;height:100%;display:block}
-.coinview .cvtext{position:absolute;inset:17%;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:700;font-size:16.5px;line-height:1.6;color:#4a4232;word-break:break-all}
+.coinview .flip{position:absolute;inset:0;transform-style:preserve-3d;transition:transform .65s cubic-bezier(.3,1.35,.45,1)}
+.coinview .face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.coinview .face svg{width:100%;height:100%;display:block}
+.coinview .face.back{transform:rotateY(180deg)}
+.coinview.flipped .flip{transform:rotateY(180deg)}
+.coinview .cvtext{font-family:'Yusei Magic','Zen Maru Gothic',sans-serif;position:absolute;inset:17%;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:700;font-size:16.5px;line-height:1.6;color:#4a4232;word-break:break-all}
 .memo.praise .coinbig{display:block}
 .coinbig svg{width:100%;height:auto;display:block}
 .cap.drop{animation:drop .75s cubic-bezier(.2,.9,.3,1) both,wob 2.4s 1s ease-in-out infinite}
@@ -233,6 +247,7 @@ label.btn input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:
       <button class="slothit" id="slotHit" aria-label="コインを入れる"></button>
       <button class="retbtn" id="retBtn" aria-label="返却ボタン"></button>
       <div class="coinlayer" id="coinLayer"></div>
+      <div id="rollSlot"></div>
     </div>
     <div class="card" id="card">
       <canvas id="sm" width="300" height="400"></canvas>
@@ -246,7 +261,7 @@ label.btn input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:
       <textarea id="memoText" maxlength="60" rows="4" placeholder="例：朝いちばんのパン屋に並んでみたい" aria-label="やりたいことメモ"></textarea>
       <span class="mn" id="memoN">0/60</span>
     </div>
-    <div class="coinview" id="coinview"><svg viewBox="0 0 48 48"><defs><radialGradient id="cgb" cx="0.38" cy="0.32" r="0.9"><stop offset="0" stop-color="#f4f7f9"/><stop offset=".6" stop-color="#ccd4db"/><stop offset="1" stop-color="#9aa7b1"/></radialGradient></defs><circle cx="24" cy="24" r="21" fill="url(#cgb)" stroke="#1d1a2f" stroke-width="2.5"/><circle cx="24" cy="24" r="16.5" fill="none" stroke="rgba(29,26,47,.35)" stroke-width="1.6"/><circle cx="24" cy="24" r="12.5" fill="none" stroke="rgba(29,26,47,.18)" stroke-width="1.2"/></svg><span class="cvtext" id="cvText"></span></div>
+    <div class="coinview" id="coinview"><span class="flip"><span class="face front" id="cvFront"></span><span class="face back" id="cvBack"></span></span></div>
     <button class="cap hide" id="cap" data-act="open" aria-label="カプセルをあける"><span class="top"></span><span class="bot"></span></button>
   </div>
 
@@ -765,51 +780,50 @@ window.__startGacha=function(){
     machine.classList.toggle('hascoin', !!st.insertedId);
     machine.classList.toggle('ready', !!st.insertedId);
     var rest=st.coins.filter(function(c){ return String(c.id)!==String(st.insertedId) && String(c.id)!==String(st.cupCoinId); });
-    var fc=footCoin(), h='';
-    if(rest.length>1) h+='<span class="stackcoin" aria-hidden="true">'+coinFace()+'</span>';
-    if(fc){
-      var t=fc.text||'';
-      var fs=t.length<=14?'8.5px':(t.length<=30?'7.5px':'6.5px');
-      h+='<button class="fcoin" id="footCoin" data-cid="'+esc(fc.id)+'" aria-label="コイン"><span class="flip"><span class="face front">'+coinFace()+'</span><span class="face back">'+coinBack()+'<span class="ctext" style="font-size:'+fs+'">'+esc(t)+'</span></span></span></button>';
-    }
-    coinLayer.innerHTML=h;
+    var h='';
+    if(rest.length){ h='<div class="roll"><div class="rcap"></div><div class="rbody"><div class="rwin">'+rest.slice(0,7).map(function(c){ return '<button class="rcoin" data-cid="'+esc(c.id)+'" aria-label="コイン">'+coinFace()+'</button>'; }).join('')+'</div></div><div class="rbase"></div></div>'; }
+    $('rollSlot').innerHTML=h;
   }
   function renderCup(pop){ cupCoin.className='cupcoin'+(st.cupCoinId?' on':'')+(pop?' drop':''); }
   function claimCup(){ if(!st.cupCoinId) return; st.cupCoinId=null; renderCup(false); renderCoins(); jig(); }
   var cdrag=null;
-  coinLayer.addEventListener('pointerdown',function(e){
-    var fc=e.target.closest('.fcoin'); if(!fc||st.mode!=='home') return;
-    cdrag={fc:fc,x:e.clientX,y:e.clientY,moved:0,lr:coinLayer.getBoundingClientRect()};
-    try{ fc.setPointerCapture(e.pointerId); }catch(x){}
+  $('rollSlot').addEventListener('pointerdown',function(e){
+    var rc=e.target.closest('.rcoin'); if(!rc||st.mode!=='home') return;
+    var lr=coinLayer.getBoundingClientRect(), r=rc.getBoundingClientRect();
+    cdrag={el:rc,cid:rc.getAttribute('data-cid'),x:e.clientX,y:e.clientY,moved:0,lr:lr,cx:r.left+r.width/2-lr.left,cy:r.top+r.height/2-lr.top};
+    try{ rc.setPointerCapture(e.pointerId); }catch(x){}
     e.preventDefault();
   });
-  coinLayer.addEventListener('pointermove',function(e){
+  document.addEventListener('pointermove',function(e){
     if(!cdrag) return;
     var dx=e.clientX-cdrag.x, dy=e.clientY-cdrag.y;
     cdrag.moved=Math.max(cdrag.moved,Math.abs(dx)+Math.abs(dy));
-    if(cdrag.moved>8){ cdrag.fc.classList.add('drag'); cdrag.fc.style.left=(cdrag.lr.width*0.865+dx)+'px'; cdrag.fc.style.top=(cdrag.lr.height*0.925+dy)+'px'; }
+    if(cdrag.moved>8){
+      var bottom=footCoin();
+      if(!bottom || String(bottom.id)!==String(cdrag.cid)){ cdrag=null; return; }
+      if(!cdrag.el.classList.contains('drag')){ cdrag.el.classList.add('drag'); coinLayer.appendChild(cdrag.el); cdrag.el.style.left=cdrag.cx+'px'; cdrag.el.style.top=cdrag.cy+'px'; }
+      cdrag.el.style.left=(cdrag.cx+dx)+'px'; cdrag.el.style.top=(cdrag.cy+dy)+'px';
+    }
   });
   function coinUp(){
     if(!cdrag) return;
-    var fc=cdrag.fc, mv=cdrag.moved, lr=cdrag.lr; cdrag=null;
-    fc.classList.remove('drag');
-    if(mv<=8){
-      if(fc.classList.contains('flipped')){ var cn=footCoin(); if(cn&&cn.text) showCoin(cn.text); else fc.classList.remove('flipped'); }
-      else fc.classList.add('flipped');
-      return;
-    }
-    var r=fc.getBoundingClientRect(), cx=r.left+r.width/2-lr.left, cy=r.top+r.height/2-lr.top;
-    var sx=lr.width*0.70, sy=lr.height*0.528, d=Math.sqrt((cx-sx)*(cx-sx)+(cy-sy)*(cy-sy));
-    if(d<58) insertCoin(fc); else { fc.style.left=''; fc.style.top=''; }
+    var el=cdrag.el, mv=cdrag.moved, lr=cdrag.lr, cid=cdrag.cid;
+    var px=parseFloat(el.style.left), py=parseFloat(el.style.top);
+    if(isNaN(px)) px=cdrag.cx; if(isNaN(py)) py=cdrag.cy;
+    cdrag=null;
+    if(mv<=8){ var cn=null; st.coins.forEach(function(c){ if(String(c.id)===String(cid)) cn=c; }); if(cn) showCoin(cn); return; }
+    if(!el.classList.contains('drag')) return;
+    var sx=lr.width*0.70, sy=lr.height*0.528, d=Math.sqrt((px-sx)*(px-sx)+(py-sy)*(py-sy));
+    if(d<58) insertCoin(cid, el); else renderCoins();
   }
-  coinLayer.addEventListener('pointerup',coinUp);
-  coinLayer.addEventListener('pointercancel',coinUp);
-  function insertCoin(fc){
-    if(st.insertedId){ sayWarn('コインはもう入ってる'); fc.style.left=''; fc.style.top=''; return; }
-    var coin=footCoin(); if(!coin) return;
+  document.addEventListener('pointerup',coinUp);
+  document.addEventListener('pointercancel',coinUp);
+  function insertCoin(cid, el){
+    if(st.insertedId){ sayWarn('コインはもう入ってる'); renderCoins(); return; }
+    var coin=null; st.coins.forEach(function(c){ if(String(c.id)===String(cid)) coin=c; }); if(!coin) return;
     var lr=coinLayer.getBoundingClientRect();
-    fc.classList.add('inserting');
-    fc.style.left=(lr.width*0.70)+'px'; fc.style.top=(lr.height*0.528)+'px';
+    el.classList.add('inserting');
+    el.style.left=(lr.width*0.70)+'px'; el.style.top=(lr.height*0.528)+'px';
     setTimeout(function(){ st.insertedId=coin.id; renderCoins(); jig(); },330);
   }
   slotHit.addEventListener('click',function(){
@@ -830,12 +844,16 @@ window.__startGacha=function(){
   });
   cupCoin.addEventListener('click',function(){ if(st.mode==='home'&&st.cupCoinId) claimCup(); });
 
-  function showCoin(t){
+  function showCoin(coin){
     if(st.mode!=='home') return; st.mode='coinview'; chipsEl.innerHTML='';
-    $('cvText').textContent=t;
+    var t=coin.text||'';
+    var fs=t.length<=14?'21px':(t.length<=30?'18px':'15.5px');
+    $('cvFront').innerHTML=coinFace();
+    $('cvBack').innerHTML=coinBack()+(t?'<span class="cvtext" style="font-size:'+fs+'">'+esc(t)+'</span>':'');
     coinviewEl.className='coinview on'; machine.classList.add('away');
     copy.innerHTML=''; acts.innerHTML='<button class="btn" data-act="closeCoin">とじる</button>';
   }
+  coinviewEl.addEventListener('click',function(){ if(st.mode==='coinview') coinviewEl.classList.toggle('flipped'); });
 
   /* いいところを書いてコインを渡す */
   function praise(){
