@@ -81,6 +81,14 @@ body{margin:0;color:var(--ink);font-family:var(--body);font-weight:500;font-size
 
 .bit{position:absolute;left:50%;top:50%;width:13px;height:13px;margin:-6px;border:2.5px solid var(--ink);border-radius:4px;pointer-events:none;animation:bit .8s cubic-bezier(.1,.7,.3,1) forwards}
 @keyframes bit{from{transform:rotate(var(--a)) translateY(0) scale(1)}to{transform:rotate(var(--a)) translateY(calc(var(--d) * -1)) rotate(260deg) scale(.4);opacity:0}}
+.bit.paper{border-radius:1px;animation-name:bitp;animation-duration:1.3s}
+@keyframes bitp{from{transform:rotate(var(--a)) translateY(0) rotate(0)}to{transform:rotate(var(--a)) translateY(70px) rotate(200deg) scale(.85);opacity:0}}
+.scene.glow{animation:glowf .65s ease-out}
+@keyframes glowf{0%{filter:brightness(1)}30%{filter:brightness(1.18)}100%{filter:brightness(1)}}
+.cap.shakeBig{animation:shakeBig .5s linear both}
+.cap.shakeSoft{animation:shakeSoft .45s linear both}
+@keyframes shakeBig{0%,100%{transform:translateX(0) rotate(0)}15%{transform:translateX(-13px) rotate(-11deg)}30%{transform:translateX(13px) rotate(11deg)}45%{transform:translateX(-11px) rotate(-9deg)}60%{transform:translateX(11px) rotate(9deg)}80%{transform:translateX(-5px) rotate(-4deg) scale(1.14)}}
+@keyframes shakeSoft{0%,100%{transform:translateX(0) rotate(0)}25%{transform:translateX(-4px) rotate(-3deg)}50%{transform:translateX(4px) rotate(3deg)}75%{transform:translateX(-3px) rotate(-2deg)}}
 
 .listbtn{font:inherit;font-size:13px;font-weight:700;color:var(--ink);background:var(--paper);border:2.5px solid var(--ink);border-radius:999px;padding:1px 6px 1px 12px;display:flex;align-items:center;gap:6px;cursor:pointer;box-shadow:2px 2px 0 var(--ink)}
 .listbtn b{background:var(--red);color:#fff;border-radius:999px;min-width:22px;height:22px;display:grid;place-items:center;font-family:var(--display);font-weight:400;font-size:12px;font-variant-numeric:tabular-nums}
@@ -156,7 +164,7 @@ label.btn input{position:absolute;width:1px;height:1px;opacity:0;pointer-events:
 .authcard input{font:inherit;font-size:16px;padding:10px 12px;border:3px solid var(--ink);border-radius:12px;background:#fff;color:var(--ink)}
 .asoft{font-size:14px;color:var(--muted)}
 .footbtn{font:inherit;font-size:11.5px;color:var(--muted);background:none;border:0;text-decoration:underline;text-underline-offset:3px;cursor:pointer;padding:0}
-@media (prefers-reduced-motion:reduce){.cap.arrive,.cap.drop,.cap.into,.machine.jig,.cap.shake,.cap.roll,.cap.pop,.bit,.btn.spin .dial{animation:none}.cap.roll,.cap.into{opacity:0}.card,.cap span{transition:opacity .2s}}
+@media (prefers-reduced-motion:reduce){.cap.arrive,.cap.drop,.cap.into,.machine.jig,.cap.shake,.cap.shakeBig,.cap.shakeSoft,.cap.roll,.cap.pop,.bit,.scene.glow,.btn.spin .dial{animation:none}.cap.roll,.cap.into{opacity:0}.card,.cap span{transition:opacity .2s}}
 </style>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#ffd23f">
@@ -239,8 +247,9 @@ window.__startGacha=function(){
         if(c.kind==='file'){
           var ext='mp4'; if(c.blob&&c.blob.name){ var p=c.blob.name.split('.').pop(); if(p&&p.length<=5) ext=p; }
           var path=pair+'/'+crypto.randomUUID()+'.'+ext;
-          return sb.storage.from('gacha-videos').upload(path,c.blob,{contentType:(c.blob&&c.blob.type)||'video/mp4',upsert:false})
-            .then(function(r){ if(r.error) throw r.error; return rpc('gacha_add_file',{p_path:path,p_dur:(isFinite(c.dur)?c.dur:null)}); })
+          var up=function(force){ return sb.storage.from('gacha-videos').upload(path,c.blob,{contentType:(c.blob&&c.blob.type)||'video/mp4',upsert:!!force}).then(function(r){ if(r.error) throw r.error; }); };
+          return up(false).catch(function(){ return new Promise(function(res){ setTimeout(res,1500); }).then(function(){ return up(true); }); })
+            .then(function(){ return rpc('gacha_add_file',{p_path:path,p_dur:(isFinite(c.dur)?c.dur:null)}); })
             .then(function(id){ notifyPartner(); return {id:id, by:slot}; });
         }
         return Promise.reject(new Error('unsupported kind'));
@@ -438,21 +447,25 @@ window.__startGacha=function(){
     }).catch(function(){ st.warn='取り出せませんでした。もう一度まわしてください。'; home(); });
   }
 
-  function burst(){
-    var cols=['#f0412f','#2f7bff','#ff5c8a','#fffdf5','#34c38f'];
-    for(var i=0;i<18;i++){
-      var b=document.createElement('i'); b.className='bit';
-      b.style.setProperty('--a',(i*20+Math.random()*14)+'deg'); b.style.setProperty('--d',(90+Math.random()*90)+'px');
+  function burst(kind){
+    var memo=(kind==='memo');
+    var cols=memo?['#fffdf5','#fffdf5','#f3e9d2','#fffdf5','#f3e9d2']:['#f0412f','#2f7bff','#ff5c8a','#f5b301','#fffdf5','#34c38f'];
+    var n=memo?10:26;
+    for(var i=0;i<n;i++){
+      var b=document.createElement('i'); b.className='bit'+(memo?' paper':'');
+      b.style.setProperty('--a',(i*(360/n)+Math.random()*14)+'deg'); b.style.setProperty('--d',((memo?60:110)+Math.random()*(memo?50:110))+'px');
       b.style.background=cols[i%cols.length]; scene.appendChild(b);
-      (function(el){ setTimeout(function(){ el.remove(); },850); })(b);
+      (function(el){ setTimeout(function(){ el.remove(); },memo?1350:900); })(b);
     }
+    if(!memo){ scene.classList.remove('glow'); void scene.offsetWidth; scene.classList.add('glow'); setTimeout(function(){ scene.classList.remove('glow'); },650); }
   }
   function open(){
     if(st.mode!=='out') return;
     st.mode='opening'; acts.innerHTML='';
-    capSet('shake');
+    var isMemo=(st.cur.kind==='memo');
+    capSet(isMemo?'shakeSoft':'shakeBig');
     setTimeout(function(){
-      capSet('open'); if(!calm) burst();
+      capSet('open'); if(!calm) burst(isMemo?'memo':'file');
       if(st.cur.kind==='memo'){ showMemo(); return; }
       startPlay();
     },ms(450));
@@ -569,9 +582,10 @@ window.__startGacha=function(){
     machine.classList.add('away'); card.setAttribute('data-show','vd'); card.className='card on';
     v.muted=true; v.loop=true; v.src=st.draft.url; var pr=v.play(); if(pr&&pr.catch) pr.catch(function(){});
     var d=st.draft.dur, len=(isFinite(d)&&d>0)?fmt(d)+' の動画':'動画 1本';
-    var over=(isFinite(d)&&d>180)||(st.draft.blob&&st.draft.blob.size>50*1024*1024);
+    var overDur=isFinite(d)&&d>180, overSize=!!(st.draft.blob&&st.draft.blob.size>50*1024*1024), over=overDur||overSize;
+    var overMsg=overDur?'<p class="warn">3分をこえています（いま '+fmt(d)+'）。短くしてから入れてね。</p>':'<p class="warn">ファイルが大きすぎます（いま '+Math.max(1,Math.round(st.draft.blob.size/1048576))+'MB、50MBまで）。短く撮るか、画質を落として撮ってね。</p>';
     copy.innerHTML='<p class="k">'+len+'</p><h1>カプセルにつめて、'+P[other(st.me)].name+'へ</h1>'+
-      (over?'<p class="warn">3分・50MBをこえています。短くしてから入れてね。</p>':((isFinite(d)&&d>75)?'<p class="warn">1分をこえています。短いほうが毎晩続けやすいです。</p>':'<p class="soft">開けてから24時間で消えます。こちらには残りません。</p>'));
+      (over?overMsg:((isFinite(d)&&d>75)?'<p class="warn">1分をこえています。短いほうが毎晩続けやすいです。</p>':'<p class="soft">開けてから24時間で消えます。こちらには残りません。</p>'));
     acts.innerHTML= over ? '<div class="row">'+pick('撮り直す','plain')+'<button class="btn plain" data-act="cancel">やめる</button></div>'
       : '<button class="btn" data-act="send">ガチャ台に入れる</button><div class="row">'+pick('撮り直す','plain')+'<button class="btn plain" data-act="cancel">やめる</button></div>';
   }
@@ -629,10 +643,20 @@ window.__startGacha=function(){
     if(st.mode!=='compose' && st.mode!=='ready') return;
     var f=e.target.files&&e.target.files[0]; if(!f) return;
     stopV(); dropDraft();
-    var url=URL.createObjectURL(f); st.draft={kind:'file',url:url,dur:NaN,blob:f};
-    var probe=document.createElement('video'); probe.preload='metadata';
-    probe.onloadedmetadata=function(){ if(st.draft) st.draft.dur=probe.duration; ready(); };
-    probe.onerror=function(){ ready(); };
+    var url=URL.createObjectURL(f); var draft={kind:'file',url:url,dur:NaN,blob:f}; st.draft=draft;
+    var probe=document.createElement('video'); probe.muted=true; probe.playsInline=true; probe.preload='auto';
+    probe.style.cssText='position:absolute;left:0;top:0;width:1px;height:1px;opacity:0;pointer-events:none';
+    document.body.appendChild(probe);
+    var probeFin=false;
+    function probeDone(){ if(probeFin) return; probeFin=true; try{ probe.remove(); }catch(e){} if(st.draft===draft) ready(); }
+    probe.onloadedmetadata=function(){
+      var d=probe.duration;
+      if(isFinite(d)&&d>0){ draft.dur=d; probeDone(); }
+      else { try{ probe.currentTime=1e7; }catch(e){} setTimeout(probeDone,1200); }
+    };
+    probe.ondurationchange=function(){ var d=probe.duration; if(isFinite(d)&&d>0){ draft.dur=d; probeDone(); } };
+    probe.onerror=function(){ probeDone(); };
+    setTimeout(probeDone,3000);
     probe.src=url;
   });
 
