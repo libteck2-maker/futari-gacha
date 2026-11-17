@@ -335,7 +335,7 @@ window.__startGacha=function(){
       toggleWish:function(id){ return rpc('gacha_toggle_wish',{p_id:id}); },
       deleteWish:function(id){ return rpc('gacha_delete_wish',{p_id:id}); },
       moveWish:function(id,dir){ return rpc('gacha_move_wish',{p_id:id,p_dir:dir}); },
-      recapsule:function(viewer,id){ return rpc('gacha_recapsule',{p_wish_id:id}).then(function(cid){ if(cid) notifyPartner(); return cid; }); },
+      recapsule:function(viewer,id){ return rpc('gacha_recapsule',{p_wish_id:id}).then(function(r){ if(r && r.by_slot===slot) notifyPartner(); return r; }); },
       fastForward:function(){ return Promise.resolve(); },
       onChange:function(cb){}
     };
